@@ -1,0 +1,233 @@
+<ng-container>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-1">
+        <!-- La navbar reste identique sauf le bouton d'action -->
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="assets/images/greco.png" alt="Logo" style="width: 180px; height: 40px;"
+                    class="rounded-circle">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" [routerLink]="['']">
+                            {{ 'Accueil' | translate }}</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex">
+                    <a [routerLink]="['/contact']" class="btn btn-link text-dark me-2 text-decoration-none">
+                        {{ 'Contact us' | translate }} →
+                    </a>
+                    <!-- Modification du bouton pour rediriger vers login -->
+                    <a [routerLink]="['/login']" class="btn btn-outline-primary rounded-pill px-4">
+                        {{ "se connecter" | translate }} →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Étape 1 - Formulaire d'inscription -->
+    <ng-container *ngIf="stepIndex==1">
+        <div class="d-flex align-items-center justify-content-center min-vh-100 bg-body-tertiary">
+            <div class="card shadow-lg" style="max-width: 1200px; border: none;">
+                <div class="row g-0">
+                    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center" style="background: linear-gradient(45deg, rgba(3, 3, 3, 0.6) 0%, rgba(3, 33, 69, 0.6) 50%, rgba(40, 41, 42, 0.6) 100%), url('assets/images/bg_3.PNG');
+                                background-size: cover;
+                                background-position: center;">
+                        <div class="testimonial text-center p-4">
+                            <h1 class="mb-4 text-white">{{ 'Rejoignez notre communauté' | translate }}</h1>
+                        </div>
+                    </div>
+
+                    <!-- Section Formulaire -->
+                    <div class="col-md-6 bg-white p-5">
+                        <main class="form-signin w-100">
+                            <form (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+                                <h2 class="mb-4">{{ 'Créez votre compte' | translate }}</h2>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input [(ngModel)]="form.prenom" type="text" name="firstName"
+                                                class="form-control" id="firstName"
+                                                placeholder="{{ 'prenom' | translate }}" required>
+                                            <label for="firstName">{{ 'prenom' | translate }}</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input [(ngModel)]="form.nom" type="text" name="lastName"
+                                                class="form-control" id="lastName"
+                                                placeholder="{{ 'nom' | translate }}" required>
+                                            <label for="lastName">{{ 'nom' | translate }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input [(ngModel)]="form.email" type="email" name="email" class="form-control"
+                                        id="email" placeholder="{{ 'email' | translate }}" required>
+                                    <label for="email">{{ 'email' | translate }}</label>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input [(ngModel)]="form.telephone" type="tel" name="phone" class="form-control"
+                                        id="phone" placeholder="{{ 'numero de telephone' | translate }}" required>
+                                    <label for="phone">{{ 'numero de telephone' | translate }}</label>
+                                </div>
+
+                                <div class="mb-3 position-relative">
+                                    <div class="form-floating">
+                                        <input [(ngModel)]="form.password" [type]="vuec ? 'text' : 'password'"
+                                            name="password" class="form-control" id="floatingPassword"
+                                            placeholder="{{ 'nouveau mot de passe' | translate }}" required>
+                                        <label for="floatingPassword">{{ 'nouveau mot de passe' | translate }}</label>
+                                    </div>
+                                    <button type="button" (click)="togglePasswordVisibility()"
+                                        class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2">
+                                        <i class="fa" [ngClass]="{'fa-eye': !vuec, 'fa-eye-slash': vuec}"></i>
+                                    </button>
+                                </div>
+
+                                <div class="mb-3 position-relative">
+                                    <div class="form-floating">
+                                        <input [(ngModel)]="form.confirmPassword"
+                                            [type]="vuecConfirm ? 'text' : 'password'" name="confirmPassword"
+                                            class="form-control" id="confirmPassword"
+                                            placeholder="{{ 'confirmer mot de passe' | translate }}" required>
+                                        <label for="confirmPassword">{{ 'confirmer mot de passe' | translate }}</label>
+                                    </div>
+                                    <button type="button" (click)="toggleConfirmPasswordVisibility()"
+                                        class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2">
+                                        <i class="fa"
+                                            [ngClass]="{'fa-eye': !vuecConfirm, 'fa-eye-slash': vuecConfirm}"></i>
+                                    </button>
+                                </div>
+
+                                <div *ngIf="errorMessage" class="alert alert-danger my-2 text-center">
+                                    <p class="small">{{ errorMessage | translate }}</p>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label small" for="terms">
+                                        {{ 'accept_terms' | translate }}
+                                    </label>
+                                </div>
+
+                                <button *ngIf="!loading" class="btn btn-primary w-100 py-2" type="submit">
+                                    {{ "s'enregistrer" | translate }}
+                                </button>
+
+                                <button *ngIf="loading" class="btn btn-primary w-100 py-2" type="button" disabled>
+                                    <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+                                    <span role="status">{{ 'loading' | translate }}</span>
+                                </button>
+                            </form>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- Étape 2 - Vérification -->
+    <!-- -------------------------- -------------------------- ------------------------ -->
+    <ng-container *ngIf="stepIndex==2">
+
+        <div class="d-flex align-items-center justify-content-center min-vh-100 bg-body-tertiary">
+            <div class="shadow-lg" style="max-width: 1200px; border: none;">
+                <div class="row g-0">
+                    <div class="col-12 bg-light d-flex flex-column justify-content-center align-items-center">
+                        <div class="verification-container text-center">
+                            <h2 class="font-weight-bold text-primary mb-3">
+                                {{ 'Authentifiez votre compte' | translate }}
+                            </h2>
+                            <p class="text-muted mb-4">
+                                {{ 'entrer le code de vérification' | translate }}
+                            </p>
+
+                            <!-- Champ OTP personnalisé -->
+                            <div class="otp-container d-flex justify-content-center mb-4 gap-2">
+                                <div class="d-flex gap-2">
+                                    <!-- Boucle sur 6 chiffres -->
+                                    <ng-container *ngFor="let i of [0,1,2,3,4,5]; let last = last">
+                                        <input type="text" maxlength="1"
+                                            class="form-control text-center fw-bold otp-input"
+                                            style="width: 2.5rem; height: 2.5rem; font-size: 1.5rem;"
+                                            [(ngModel)]="otpDigits[i]" (input)="onInput($event, i)"
+                                            (keydown.backspace)="onBackspace(i)" #otpInput>
+
+                                        <!-- Séparateur après le 3ème caractère -->
+                                        <span class="px-1 align-self-center" *ngIf="i === 2">-</span>
+                                    </ng-container>
+                                </div>
+                            </div>
+
+
+                            <!-- Informations et bouton Vérification -->
+                            <div class="verification-info text-center">
+                                <p *ngIf="modeVerif === 2" class="text-muted">
+                                    {{ 'un code envoyé sms' | translate }} <code>{{ utilisateur.telephone }}</code>
+                                </p>
+                                <p *ngIf="modeVerif === 1" class="text-muted">
+                                    {{ 'un code envoyé mail' | translate }} <code>{{ utilisateur.email }}</code>
+                                </p>
+
+                                <button *ngIf="!loading" class="btn btn-success px-5 py-2 mt-3" (click)="verifierCode()"
+                                    [disabled]="!otpValue || otpValue.length < 6 || timer === 0">
+                                    {{ 'verifier' | translate }}
+                                </button>
+
+
+                                <!-- Bouton de chargement -->
+                                <button *ngIf="loading" class="btn btn-success px-5 py-2 mt-3" type="button" disabled>
+                                    <span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+                                    <span role="status">{{ 'loading' | translate }}</span>
+                                </button>
+
+                            </div>
+
+                            <!-- Timer et renvoi du code -->
+                            <div class="mt-4">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col-md-8 col-sm-10 text-center">
+                                        <p class="text-muted">
+                                            {{ 'attendre_timer' | translate }}
+                                            <span id="timer" class="fw-bold">{{ timerDisplay }}</span>
+                                            {{ 'secondes' | translate }}
+                                        </p>
+                                        <p>
+                                            {{ 'pas recu de code' | translate }}
+                                            <button class="btn btn-link p-0" (click)="renvoyerCode()"
+                                                [disabled]="timer !== 0">
+                                                {{ 'renvoyer' | translate }}
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>
+
+
+<div *ngIf="waiter" class="loader-overlay d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-white">{{ 'loading' | translate }}</p>
+    </div>
+</div>

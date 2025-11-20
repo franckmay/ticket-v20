@@ -1,0 +1,3 @@
+{
+    "serverIP": "https://greco-erp.com/backend/api/"  
+}

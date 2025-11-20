@@ -1,0 +1,105 @@
+<p-toast></p-toast>
+
+<div class="assign-modal-container">
+    <!-- EN-TÊTE -->
+    <div class="assign-header">
+      <div>
+        <h4 class="mb-0">{{ 'responsable_table' | translate }}</h4>
+        <p class="text-muted mb-0">Ticket : <span class="text-primary font-weight-bold">{{ ticket.libelleFr }}</span></p>
+      </div>
+      <button class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+    </div>
+  
+    <!-- CORPS PRINCIPAL (Layout scindé) -->
+    <div class="assign-body">
+      <!-- PARTIE GAUCHE : LISTE DES MEMBRES -->
+      <div class="members-panel">
+        <div class="search-bar">
+          <i class="fa fa-search search-icon"></i>
+          <input type="text" class="form-control" 
+                 placeholder="Rechercher un membre par nom, prénom, rôle..."
+                 [(ngModel)]="searchTerm" (ngModelChange)="filterMembers()">
+        </div>
+  
+        <!-- SKELETON LOADER : Affiché pendant le chargement -->
+        <div *ngIf="loading" class="members-grid">
+          <div *ngFor="let i of [1,2,3,4,5,6]" class="member-card-skeleton">
+            <div class="avatar-skeleton"></div>
+            <div class="info-skeleton">
+              <div class="line-skeleton"></div>
+              <div class="line-skeleton short"></div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- GRILLE DES MEMBRES -->
+        <div *ngIf="!loading" class="members-grid-wrapper">
+          <div class="members-grid">
+            <div *ngFor="let membre of filteredMembers" 
+                 class="member-card" 
+                 [class.is-selected]="isSelected(membre)"
+                 (click)="toggleSelection(membre)">
+              
+              <div class="member-avatar" [style.backgroundColor]="'#e9ecef'">{{ getInitials(membre) }}</div>
+              
+              <div class="member-info">
+                <div class="member-name">{{ membre.membrePrenom }} {{ membre.membreNom }}</div>
+                <div class="member-role">{{ membre.roleDesignation }}</div>
+              </div>
+  
+              <div class="selection-indicator">
+                <i class="fa fa-check-circle"></i>
+              </div>
+            </div>
+          </div>
+          <!-- État vide -->
+          <div *ngIf="!loading && filteredMembers.length === 0" class="empty-state">
+              <i class="fa fa-users-slash fa-3x text-muted mb-3"></i>
+              <h4>Aucun membre trouvé</h4>
+              <p class="text-muted">Le projet ne contient aucun membre ou votre recherche est trop restrictive.</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- PARTIE DROITE : MEMBRES SÉLECTIONNÉS ET ACTIONS -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h5>Membres Assignés ({{ selectedMembres.length }})</h5>
+        </div>
+        <div class="sidebar-content">
+          <ng-container *ngIf="selectedMembres.length > 0; else noSelection">
+            <div *ngFor="let s_membre of selectedMembres" class="selected-member-item">
+              <div class="d-flex align-items-center mb-2">
+                <div class="member-avatar-small">{{ getInitials(s_membre) }}</div>
+                <div class="member-info">
+                  <div class="member-name">{{ s_membre.membrePrenom }} {{ s_membre.membreNom }}</div>
+                  <div class="member-role">{{ s_membre.roleDesignation }}</div>
+                </div>
+              </div>
+              <!-- Le champ de description est ici, plus propre -->
+              <input type="text" 
+                     class="form-control form-control-sm"
+                     placeholder="Ajouter une note/description (optionnel)" 
+                     [(ngModel)]="s_membre.description">
+            </div>
+          </ng-container>
+          <ng-template #noSelection>
+              <div class="empty-state">
+                  <i class="fa fa-hand-pointer fa-3x text-muted mb-3"></i>
+                  <p class="text-muted">Sélectionnez un ou plusieurs membres dans la liste de gauche pour les assigner à ce ticket.</p>
+              </div>
+          </ng-template>
+        </div>
+  
+        <div class="sidebar-footer">
+          <button class="btn btn-outline-secondary w-100" (click)="onCancel()" [disabled]="loading">
+            {{ 'Annuler' | translate }}
+          </button>
+          <button class="btn btn-primary w-100" (click)="saveAffectation()" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span *ngIf="!loading"> {{ 'Appliquer les changements' | translate }} </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,223 @@
+<div *ngIf="ticket">
+    <!-- <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button> -->
+    <h2 class="text-center text-primary">{{getTitreForm(ticket.niveau) | translate }}</h2>
+    <form (ngSubmit)="onSave(f)" #f="ngForm" novalidate>
+        <div *ngIf="projets && ticket.niveau<3" class="row my-1">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="projetID" class="form-label">
+                        {{ 'projet' | translate }} <span class="text-danger">*</span>
+                    </label>
+                    <select id="projetID" class="form-select form-select-sm" [(ngModel)]="ticket.projetID"
+                        name="projetID" required (ngModelChange)="onProjetChange()"
+                        [ngClass]="{ 'is-invalid': f.submitted && !ticket.projetID }">
+
+                        <option value="" disabled selected>
+                            {{ 'select_project' | translate }}
+                        </option>
+                        <option *ngFor="let p of projets" [value]="p.projetID">
+                            {{ p.libelleFr }}
+                        </option>
+                    </select>
+                    <div *ngIf="f.submitted && !ticket.projetID" class="invalid-feedback">
+                        {{ 'Ce champ est obligatoire' | translate }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- parentID pour us-->
+            <div class="col-md-6 col-sm-12" *ngIf="ticket.niveau ==2">
+                <div class="form-group">
+                    <label for="parentID" class="form-label">
+                        {{ 'module' | translate }}
+                    </label>
+                    <div *ngIf="loadingTickets" class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <select id="parentID" class="form-select form-select-sm" [(ngModel)]="ticket.parentID"
+                        name="parentID">
+                        <option value="">{{ 'select_ticket_parent' | translate }}</option>
+                        <option *ngFor="let t of modulesForm" [value]="t.ticketID">
+                            {{ t.libelleFr }}
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+        <!-- parentID pour taches-->
+        <div *ngIf="ticket.niveau ==3" class="row my-1">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="parentID" class="form-label">
+                        {{ 'user_story' | translate }}
+                    </label>
+                    <div *ngIf="loadingTickets" class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <select id="parentID" class="form-select form-select-sm" [(ngModel)]="ticket.parentID"
+                        name="parentID">
+                        <option value="">{{ 'select_ticket_parent' | translate }}</option>
+                        <option *ngFor="let t of fonctionnalites" [value]="t.ticketID">
+                            {{ t.libelleFr }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ligne poids -->
+        <div class="row my-1">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="typeTicketID" class="form-label">
+                        {{ 'type ' | translate }}
+                    </label>
+                    <select id="typeTicketID" class="form-select form-select-sm" [(ngModel)]="ticket.typeTicketID"
+                        name="typeTicketID">
+                        <option value="">{{ 'select_type_ticket' | translate }}</option>
+                        <option *ngFor="let t of types" [value]="t.typeTicketID">
+                            {{ t.libelleFr }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="priorite" class="form-label">
+                        {{ 'priorite' | translate }} <span class="text-danger">*</span>
+                    </label>
+                    <select id="priorite" class="form-select form-select-sm" [(ngModel)]="ticket.priorite"
+                        name="priorite" required [ngClass]="{ 'is-invalid': f.submitted && !ticket.priorite }">
+                        <option value="" disabled selected>
+                            {{ 'select_priorite' | translate }}
+                        </option>
+                        <option *ngFor="let p of priorites" [value]="p.niveau">{{ p.libelleFr }}</option>
+                    </select>
+                    <div *ngIf="f.submitted && !ticket.priorite" class="invalid-feedback">
+                        {{ 'Ce champ est obligatoire' | translate }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" *ngIf="ticket.niveau > 2">
+                <div class="form-group">
+                    <label for="poids" class="form-label">
+                        {{ 'poids' | translate }}
+                    </label>
+                    <input id="poids" type="number" class="form-control form-control-sm" [(ngModel)]="ticket.poids"
+                        name="poids" />
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Troisième ligne : libellés FR/US -->
+        <div class="row my-1">
+            <!-- libelleFr -->
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="ticketlibelleFr" class="form-label">
+                        {{ 'libelleFr'
+                        | translate }} <span class="text-danger">*</span>
+                    </label>
+                    <input id="ticketlibelleFr" type="text" class="form-control form-control-sm"
+                        [(ngModel)]="ticket.libelleFr" name="ticketlibelleFr" required
+                        [ngClass]="{ 'is-invalid': f.submitted && !ticket.libelleFr }" />
+                    <div *ngIf="f.submitted && !ticket.libelleFr" class="invalid-feedback">
+                        {{ 'Ce champ est obligatoire' | translate }}
+                    </div>
+                </div>
+            </div>
+            <!-- libelleUs -->
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="ticketlibelleUs" class="form-label">
+                        {{ 'libelleUs' | translate }}
+                    </label>
+                    <input id="ticketlibelleUs" type="text" class="form-control form-control-sm"
+                        [(ngModel)]="ticket.libelleUs" name="ticketlibelleUs" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Quatrième ligne : description et critères qualité -->
+        <div class="row my-1">
+            <!-- description -->
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    <label for="Description" class="form-label">
+                        {{ 'description' | translate }}
+                    </label>
+                    <textarea id="description" rows="3" class="form-control form-control-sm"
+                        [(ngModel)]="ticket.description" name="description"></textarea>
+                </div>
+            </div>
+            <!-- criteresqualite -->
+            <div class="col-md-6 col-sm-12" *ngIf="ticket.niveau > 2">
+                <div class="form-group">
+                    <label for="criteresqualite" class="form-label">
+                        {{ 'criteresqualite' | translate }}
+                    </label>
+                    <textarea id="criteresqualite" rows="3" class="form-control form-control-sm"
+                        [(ngModel)]="ticket.criteresqualite" name="criteresqualite"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cinquième ligne -->
+        <div class="row my-1" *ngIf="ticket.niveau > 2">
+            <!-- dateDebut -->
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="dateDebut" class="form-label">
+                        {{ 'dateDebut' | translate }}
+                    </label>
+                    <input id="dateDebut" type="datetime-local" class="form-control form-control-sm"
+                        [(ngModel)]="ticket.dateDebut" name="dateDebut" (ngModelChange)="detDuree()" />
+                </div>
+            </div>
+            <!-- dateFin -->
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="dateFin" class="form-label">
+                        {{ 'dateFin' | translate }}
+                    </label>
+                    <input id="dateFin" type="datetime-local" class="form-control form-control-sm" [(ngModel)]="ticket.dateFin"
+                        name="dateFin" (ngModelChange)="detDuree()" />
+                </div>
+            </div>
+            <!-- duree (readonly) -->
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="duree" class="form-label">
+                        {{ 'duree' | translate }}
+                    </label>
+                    <input id="duree" type="text" class="form-control form-control-sm" [(ngModel)]="ticket.duree"
+                        name="duree" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-2">
+            <div *ngIf="invalidForm" class="mt-2 alert alert-danger" role="alert">
+                <h5 class="alert-heading">{{ 'formulaire incomplet' | translate }}</h5>
+                <p>{{ errorMessage | translate }}</p>
+            </div>
+        </div>
+
+        <!-- Boutons Enregistrer / Spinner -->
+        <div class="d-flex justify-content-end  mt-3">
+            <button type="button" class="btn btn-secondary mx-2 " (click)="onCancel()">Annuler</button>
+            <button class="btn btn-success mx-2" type="submit" *ngIf="!loading">
+                <i class="fa fa-save"></i>
+                {{ 'enregistrer' | translate }}
+            </button>
+            <button class="btn btn-primary" type="button" disabled *ngIf="loading">
+                <span class="spinner-grow spinner-grow-sm"></span>
+                {{ 'En cours...' | translate }}
+            </button>
+
+        </div>
+    </form>
+
+</div>

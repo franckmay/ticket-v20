@@ -1,0 +1,318 @@
+
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(22, 21, 21, 0.8);
+    z-index: 1050;
+  }
+
+
+  /* projet-vue.component.scss */
+
+/* Conteneur de la toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa; /* gris très clair */
+  border-bottom: 1px solid #dee2e6;
+  flex-wrap: wrap;
+
+  /* Groupe de boutons vue */
+  .btn-group {
+    .btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      border-color: #ced4da;
+
+      &.active {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      &:not(.active):hover {
+        background-color: #e2e6ea;
+      }
+    }
+  }
+
+  /* Onglets de filtre */
+  .nav-tabs {
+    border-bottom: none;
+    margin: 0;
+
+    .nav-item {
+      .nav-link {
+        color: #495057;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        border-radius: 0.25rem;
+
+        &.active {
+          background-color: #007bff;
+          color: #fff;
+        }
+
+        &:hover {
+          background-color: #e9ecef;
+        }
+      }
+    }
+  }
+}
+
+/* Adaptation pour petits écrans */
+@media (max-width: 768px) {
+  .toolbar {
+    .btn-group {
+      .btn {
+        font-size: 1.3rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    /* Cacher le texte des onglets, ne garder que l’icône */
+    .nav-tabs {
+      .nav-item {
+        .nav-link {
+          padding: 0.4rem;
+          font-size: 0;               /* masque le texte */
+          position: relative;
+
+          /* on injecte l’icône via pseudo-élément */
+          &:nth-child(1)::before {    /* Tous */
+            content: "\f0c9";         /* fa-bars */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            font-size: 1.2rem;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: currentColor;
+          }
+          &:nth-child(2)::before {    /* In Progress */
+            content: "\f110";         /* fa-spinner */
+          }
+          &:nth-child(3)::before {    /* On Review */
+            content: "\f0ad";         /* fa-wrench */
+          }
+          &:nth-child(4)::before {    /* Approved */
+            content: "\f00c";         /* fa-check */
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Curseur “pointer” partout où c’est cliquable */
+.list-group-item-action,
+.card.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Transition pour les cartes sélectionnées */
+.card.border-primary {
+  transition: box-shadow 0.2s ease-in-out;
+  box-shadow: 0 0 0 0 #007bff;
+  &:hover {
+    box-shadow: 0 0 10px rgba
+  }
+}
+
+
+
+
+
+
+
+
+/* Container of the filters */
+.filter-card {
+  background: #f9fafb; /* Light gray like the image */
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Flex wrapper for filters */
+.filters-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Style for all dropdowns and calendars */
+.filter-dropdown {
+  width: 200px;
+  height: 48px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: none;
+  border: 1px solid #e0e0e0;
+}
+
+/* Customize the search button */
+.search-btn {
+  width: 48px;
+  height: 48px;
+  background: #e2e8f0; /* Soft light blue-gray */
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Hover effect on button */
+.search-btn:hover {
+  background: #cbd5e1;
+}
+
+/* Icon inside the button */
+.search-btn i {
+  font-size: 20px;
+  color: #333;
+}
+
+.selected {
+  border: 2px solid #0d6efd !important;
+}
+
+.card-header .btn { padding: 0.25rem 0.5rem; }
+
+
+
+/* projet-vue.component.scss */
+
+/* Ligne 2 : icônes uniformisées */
+.line-2 i {
+  width: 1rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* Boutons actions réduits */
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0.2rem;
+  margin-left: 0.3rem;
+  font-size: 0.9rem;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/* Exemple couleurs full background selon statut */
+.task-card-compact {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+
+  .line-1 { font-weight: 600; }
+  .line-2 { font-size: 0.85rem; }
+  .line-3 { margin-top: 0.25rem; }
+
+  &.status-10 { background: #8d9092; /* secondary */ }
+  &.status-20 { background: #0d6efd; /* primary */ }
+  &.status-30 { background: #0dcaf0; color: #000; /* info */ }
+  &.status-40 { background: #198754; /* success */ }
+  &.status-50 { background: #212529; /* dark */ }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//***************************************
+/* projet-vue.component.scss */
+
+/* Police cursive + centrage */
+.handwriting-title {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.5rem;
+  color: #0d6efd;
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  /* Animation « écriture » */
+  overflow: hidden;
+  border-right: 2px solid transparent;
+  animation: typing 1.5s steps(20, end), blink 0.75s step-end infinite;
+
+  .name {
+    font-weight: 700;
+    margin-left: 0.5rem;
+  }
+
+  /* Trait ondulé sous le texte */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -0.25em;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: url('data:image/svg+xml;utf8,\
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="4"><path d="M0,2 Q20,0 40,2 T100,2" stroke="%230d6efd" fill="transparent" stroke-width="4"/></svg>'
+    );
+    background-size: 200% 100%;
+    animation: wave 2s linear infinite;
+  }
+}
+
+/* Animation d’écriture */
+@keyframes typing {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* Curseur clignotant */
+@keyframes blink {
+  from, to { border-color: transparent; }
+  50%      { border-color: #0d6efd; }
+}
+
+/* Animation du fond ondulé */
+@keyframes wave {
+  0%   { background-position: 0% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* Adaptation mobile */
+@media (max-width: 576px) {
+  .handwriting-title {
+    font-size: 1.75rem;
+  }
+}

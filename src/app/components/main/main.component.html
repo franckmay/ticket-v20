@@ -1,0 +1,101 @@
+<!-- Modale de confirmation -->
+<div *ngIf="showLogout" class="modal-overlay">
+    <div class="modal-content">
+        <h5 class="text-center">{{ 'deconnexion' | translate }}</h5>
+        <p>{{ 'confirmation_deconnexion' | translate }}</p>
+        <div class="d-flex justify-content-center mt-4">
+            <button class="btn btn-danger mx-2" (click)="logout()">{{ 'Oui' | translate }}</button>
+            <button class="btn btn-secondary mx-2" (click)="closeLogout()">{{ 'Non' | translate }}</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loader Overlay -->
+<div *ngIf="waiter" class="loader-overlay d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-white">{{ 'loading' | translate }}</p>
+    </div>
+</div>
+
+<!-- ---------------------- ---- ------------------------------- -->
+
+<ng-container>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-1">
+        <div class="container-fluid">
+            <!-- Bouton toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Collapse avec justify-content-between -->
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+
+                <!-- Logo à gauche -->
+                <a class="navbar-brand" href="#">
+                    <img src="assets/images/greco.png" alt="Logo" style="width: 100px; height: 40px;"
+                        class="rounded-circle">
+                </a>
+
+                <!-- Icônes à droite -->
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <!-- Administration -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" [ngClass]="{'active': activeItem === 'administration'}"
+                            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-cog"></i>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" [ngClass]="{'active': activeItem === 'adminUser'}" [routerLink]="['adminUser']" (click)="setActiveMenu('adminUser')">{{ 'utilisateurs' | translate }}</a></li>
+                                <li><a class="dropdown-item" [ngClass]="{'active': activeItem === 'adminRole'}" [routerLink]="['adminRole']" (click)="setActiveMenu('adminRole')">{{ 'gestion des permissions' | translate }}</a></li>
+                        </ul>
+                    </li>
+                    <!-- Langues -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="languageDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-globe"></i> {{ currentLang.toUpperCase() }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" (click)="changeLanguage('fr')">
+                                    Français
+                                </a></li>
+                            <li><a class="dropdown-item" (click)="changeLanguage('en')">
+                                    English
+                                </a></li>
+                        </ul>
+                    </li>
+                    <!-- Déconnexion -->
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger rounded-pill px-2" (click)="confirmLogout()">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <main>
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div *ngFor="let notification of notifications" class="toast show" role="alert" aria-live="assertive"
+                aria-atomic="true" (click)="handleNotificationClick(notification)">
+                <div class="toast-header">
+                    <strong class="me-auto">{{ notification.title || 'Notification' }}</strong>
+                    <small>{{ notification.timestamp | date:'shortTime' }}</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ notification.message }}
+                </div>
+            </div>
+        </div>
+        <router-outlet class="my-2"></router-outlet>
+    </main>
+
+</ng-container>

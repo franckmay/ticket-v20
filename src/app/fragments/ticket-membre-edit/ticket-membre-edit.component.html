@@ -1,0 +1,93 @@
+<div class="container p-4 bg-white">
+  <h2 class="text-primary mb-4">{{ 'affecter_responsabilite' | translate }}</h2>
+
+  <form #r="ngForm" (ngSubmit)="onSave(r)" novalidate>
+    <div class="row gy-3">
+      <!-- Ligne 1 : Équipe & Utilisateur -->
+      <div class="col-12 col-md-6">
+        <label for="projetequipeID" class="form-label">
+          {{ 'equipe' | translate }} <span class="text-danger">*</span>
+        </label>
+
+        <div *ngIf="loadingEquipes" class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <select id="projetequipeID" name="projetequipeID" class="form-select form-select-sm"
+          [(ngModel)]="ticketMembre!.projetequipeID" (ngModelChange)="onEquipeChange($event)" required
+          [ngClass]="{ 'is-invalid': r.submitted && !ticketMembre!.projetequipeID }">
+          <option value="">{{ 'select_equipe' | translate }}</option>
+          <option *ngFor="let p of projetEquipes" [value]="p.projetequipeID">
+            {{ p.designation }}
+          </option>
+        </select>
+        <div *ngIf="r.submitted && !ticketMembre!.projetequipeID" class="invalid-feedback">
+          {{ 'Ce champ est obligatoire' | translate }}
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="membreID" class="form-label">
+          {{ 'utilisateurs' | translate }} <span class="text-danger">*</span>
+        </label>
+        <div *ngIf="loadingMembres" class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <select id="membreID" name="membreID" class="form-select form-select-sm" [(ngModel)]="ticketMembre!.membreID"
+          required [ngClass]="{ 'is-invalid': r.submitted && !ticketMembre!.membreID }">
+          <option value="">{{ 'select_membre' | translate }}</option>
+          <option *ngFor="let m of projetMembres" [value]="m.membreID">
+            {{ m.nom }}
+          </option>
+        </select>
+        <div *ngIf="r.submitted && !ticketMembre!.membreID" class="invalid-feedback">
+          {{ 'Ce champ est obligatoire' | translate }}
+        </div>
+      </div>
+
+      <!-- Ligne 2 : Dates & Durée -->
+      <div class="col-12 col-md-3">
+        <label for="dateDebut" class="form-label">{{ 'dateDebut' | translate }}</label>
+        <input id="dateDebut" name="dateDebut" type="date" class="form-control form-control-sm"
+          [(ngModel)]="ticketMembre!.dateDebut" (ngModelChange)="detDuree()" />
+      </div>
+
+      <div class="col-12 col-md-3">
+        <label for="dateFin" class="form-label">{{ 'dateFin' | translate }}</label>
+        <input id="dateFin" name="dateFin" type="date" class="form-control form-control-sm"
+          [(ngModel)]="ticketMembre!.dateFin" (ngModelChange)="detDuree()" />
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dureeDelai" class="form-label">{{ 'duree' | translate }}</label>
+        <input id="dureeDelai" name="dureeDelai" type="text" class="form-control form-control-sm"
+          [(ngModel)]="ticketMembre!.dureeDelai" readonly />
+      </div>
+
+      <!-- Ligne 3 : Description -->
+      <div class="col-12">
+        <label for="description" class="form-label">
+          {{ 'description' | translate }} 
+        </label>
+        <textarea id="description" name="description" class="form-control form-control-sm" rows="3"
+          [(ngModel)]="ticketMembre!.description"
+          [ngClass]="{ 'is-invalid': r.submitted && !ticketMembre!.description }"></textarea>
+        <div *ngIf="r.submitted && !ticketMembre!.description" class="invalid-feedback">
+          {{ 'Ce champ est obligatoire' | translate }}
+        </div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="col-12 text-end">
+        <button type="button" class="btn btn-secondary me-2" (click)="onCancel()">
+          {{ 'annuler' | translate }}
+        </button>
+        <button *ngIf="!loading" type="submit" class="btn btn-success" >
+          <i class="fa fa-save me-1"></i>{{ 'enregistrer' | translate }}
+        </button>
+        <button *ngIf="loading" class="btn btn-primary" disabled>
+          <span class="spinner-grow spinner-grow-sm me-1"></span>{{ 'En cours...' | translate }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

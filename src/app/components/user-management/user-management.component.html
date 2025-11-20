@@ -1,0 +1,297 @@
+<div class="container my-5">
+    <h2 class="mb-4 text-primary">Gestion des utilisateurs</h2>
+
+    <ng-container *ngIf="!showForm">
+        <!-- Barre de recherche, filtre par organisation et bouton création -->
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <input type="text" class="form-control w-50" placeholder="Rechercher..." [(ngModel)]="filterText">
+                <select class="form-select ms-2 w-auto" [(ngModel)]="fparam.organisationID" (change)="loadUsers()">
+                    <option value="">Toutes organisations</option>
+                    <option *ngFor="let org of organisations" [value]="org.organisationID">{{ org.libelleFr }}</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-end g-2">
+
+                <button class="btn btn-outline-dark mx-1" (click)="actualiser()"><i class="fa fa-rotate-right"
+                        title="actualiser"></i></button>
+
+                <button class="btn btn-success" (click)="openForm()"><i class="fa fa-user-plus"
+                        title="Nouvel utilisateur"></i></button>
+            </div>
+        </div>
+
+        <!-- Tableau des utilisateurs -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{{ 'matricule' | translate }}</th>
+                    <th> {{ 'Login' | translate }} </th>
+                    <th>{{ 'prenom' | translate }}</th>
+                    <th>{{ 'nom' | translate }} </th>
+                    <th>{{ 'email' | translate }}</th>
+                    <th>{{ 'telephone' | translate }}</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <ng-container *ngFor="let user of users | filter:filterText"> -->
+                <ng-container *ngFor="let user of users">
+                    <tr *ngIf="!filterOrganisationID || user.organisationID == filterOrganisationID">
+
+                        <td>{{ user.immatriculation }}</td>
+                        <td>{{ user.login }}</td>
+                        <td>{{ user.prenom }}</td>
+                        <td>{{ user.nom }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.telephone }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2" (click)="editUser(user)">
+                                <i class="fa fa-edit" title="Modifier"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(user)">
+                                <i class="fa fa-trash" title="Supprimer"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+
+    </ng-container>
+
+
+    <!-- Modal de création / édition -->
+    <div *ngIf="showForm">
+        <div class="shadow-lg rounded p-4 bg-white">
+            <h5>{{ editing ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}</h5>
+            <form [formGroup]="userForm" (ngSubmit)="saveUser(); submitted=true" novalidate>
+                <div class="row g-3">
+
+                    <!-- Organisation -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="organisationID" class="form-label">
+                                {{ 'organisation' | translate }}<span class="text-danger">*</span></label>
+                            <select id="organisationID" formControlName="organisationID" class="form-select"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('organisationID')?.invalid}"
+                                required>
+                                <option value="" disabled>Choisir...</option>
+                                <option *ngFor="let org of organisations" [value]="org.organisationID">
+                                    {{ org.libelleFr }}</option>
+                            </select>
+                            <div *ngIf="submitted && userForm.get('organisationID')?.invalid" class="invalid-feedback">
+                                {{ 'Ce champ est obligatoire' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Immatriculation -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="immatriculation" class="form-label"> {{ 'matricule' | translate }} <span
+                                    class="text-danger">*</span></label>
+                            <input id="immatriculation" type="text" formControlName="immatriculation"
+                                class="form-control"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('immatriculation')?.invalid}"
+                                required>
+                            <div *ngIf="submitted && userForm.get('immatriculation')?.invalid" class="invalid-feedback">
+                                {{ 'Ce champ est obligatoire' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fonction -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fonction" class="form-label">{{ 'fonction' | translate }}</label>
+                            <input id="fonction" type="text" formControlName="fonction" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Service -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="service" class="form-label">{{ 'service' | translate }} </label>
+                            <input id="service" type="text" formControlName="service" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Prénom -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="prenom" class="form-label">{{ 'prenom' | translate }} <span
+                                    class="text-danger">*</span></label>
+                            <input id="prenom" type="text" formControlName="prenom" class="form-control"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('prenom')?.invalid}" required>
+                            <div *ngIf="submitted && userForm.get('prenom')?.invalid" class="invalid-feedback">
+                                {{ 'Ce champ est obligatoire' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nom -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="nom" class="form-label"> {{ 'nom' | translate }} <span
+                                    class="text-danger">*</span></label>
+                            <input id="nom" type="text" formControlName="nom" class="form-control"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('nom')?.invalid}" required>
+                            <div *ngIf="submitted && userForm.get('nom')?.invalid" class="invalid-feedback">
+                                {{ 'Ce champ est obligatoire' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email" class="form-label">{{ 'email' | translate }} <span
+                                    class="text-danger">*</span></label>
+                            <input id="email" type="email" formControlName="email" class="form-control"
+                                (blur)="onEmailBlur()"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('email')?.invalid}" required>
+                            <div *ngIf="submitted && userForm.get('email')?.invalid" class="invalid-feedback">
+                                Adresse email invalide
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Téléphone -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telephone" class="form-label">{{ 'telephone' | translate }} <span
+                                    class="text-danger">*</span></label>
+                            <input id="telephone" type="tel" formControlName="telephone" class="form-control"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('telephone')?.invalid}" required>
+                            <div *ngIf="submitted && userForm.get('telephone')?.invalid" class="invalid-feedback">
+                                {{ 'Ce champ est obligatoire' | translate }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row g-3 bg-light my-2">
+                    <!-- Login -->
+                    <div class="col-md-6" *ngIf="!editing">
+                        <div class="form-group">
+                            <label for="login" class="form-label">
+                                {{ 'Login' | translate }} <span class="text-danger">*</span>
+                            </label>
+                            <input id="login" type="text" formControlName="login" class="form-control" readonly
+                                placeholder="greco.votre.login"
+                                [ngClass]="{'is-invalid': submitted && userForm.get('login')?.invalid}">
+                            <div *ngIf="submitted && userForm.get('login')?.invalid" class="invalid-feedback">
+                                {{ 'Une adresse email valide est obligatoire' | translate }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" *ngIf="editing">
+                        <div class="form-group">
+                            <label for="login" class="form-label"> {{ 'Login' | translate }} </label>
+                            <input id="login" type="text" formControlName="login" class="form-control" readonly
+                                [ngModel]="selectedUser!.login" [disabled]="true">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                    </div>
+
+                    <!--                   
+                    <div class="col-md-6" *ngIf="!editing">
+                        <label class="form-label">{{ 'Mot de passe' | translate }}
+                            <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input [type]="showPass ? 'text' : 'password'" formControlName="password"
+                                class="form-control" [ngClass]="{'is-invalid': submitted && !validerPass}">
+                            <button type="button" class="btn btn-outline-secondary" (click)="showPass = !showPass">
+                                <i class="fa" [ngClass]="{'fa-eye': !showPass,'fa-eye-slash' :showPass}"> </i>
+                            </button>
+                        </div>
+                        <div *ngIf="submitted && !validerPass" class="invalid-feedback">
+                            {{ 'Le mot de passe est obligatoire' | translate }}
+                            <small> {{ 'passRegex' | translate }}</small>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-md-6" *ngIf="!editing">
+                        <label class="form-label">{{ 'Confirmer mot de passe' | translate }}
+                            <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input [type]="showConfirm ? 'text' : 'password'" formControlName="confirmPassword"
+                                class="form-control" [ngClass]="{'is-invalid': submitted && !passwordsMatch}">
+                            <button type="button" class="btn btn-outline-secondary"
+                                (click)="showConfirm = !showConfirm">
+                                <i class="fa" [ngClass]="{'fa-eye': !showConfirm,'fa-eye-slash' :showConfirm}"></i>
+                            </button>
+                        </div>
+                        <div *ngIf="submitted && !passwordsMatch" class="invalid-feedback">
+                            {{ 'Les mots de passe ne correspondent pas' | translate }}
+                        </div>
+                    </div> -->
+
+                </div>
+
+                <!-- Message d'erreur global -->
+                <div *ngIf="formError" class="alert alert-danger mt-3">{{ formError }}</div>
+
+                <!-- Actions -->
+                <div class="mt-4 d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2" (click)="closeForm()">Annuler</button>
+                    <button type="submit" class="btn btn-primary" *ngIf="!loading">
+                        {{ editing ? 'Mettre à jour' : 'Créer' }}</button>
+
+                    <button class="btn btn-primary" type="button" disabled *ngIf="loading">
+                        <span class="spinner-grow spinner-grow-sm"></span>
+                        {{ 'En cours...' | translate }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+<!-- Loader Overlay -->
+<div *ngIf="loading" class="loader-overlay d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-white">{{ 'loading' | translate }}</p>
+    </div>
+</div>
+
+<!-- Confirmation de suppression -->
+<div *ngIf="showDeleteConfirm" class="modal-overlay">
+    <div class="my-modal-content shadow-lg rounded p-4 bg-white text-center">
+        <p>Voulez-vous vraiment supprimer <strong>{{ selectedUser?.prenom }} {{ selectedUser?.nom }}</strong> ?</p>
+        <div class="d-flex justify-content-center mt-3">
+            <button class="btn btn-danger me-2" (click)="deleteUser()">
+                <i class="fa fa-trash" title="Oui"></i>{{ 'Oui' | translate }}
+            </button>
+            <button class="btn btn-secondary" (click)="cancelDelete()">
+                <i class="fa fa-times" title="Non"></i>{{ 'Non' | translate }}
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modale d'erreur -->
+<div *ngIf="displayError" class="modal-overlay">
+    <div class="my-modal-content shadow-lg rounded p-4 bg-white text-center">
+        <h5 class="modal-title text-danger" id="errorModalLabel">{{ 'Erreur' | translate }}</h5>
+        <hr>
+        <p class="alert alert-danger">{{ errorMessage | translate }}</p>
+        <div class="d-flex justify-content-center mt-3">
+            <button type="button" class="btn btn-secondary" (click)="closeError()">{{ 'Fermer' | translate }}</button>
+        </div>
+    </div>
+</div>

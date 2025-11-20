@@ -1,0 +1,161 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+<div class="team-manager-container">
+    <!-- PANNEAU DE GAUCHE : LISTE DES ÉQUIPES -->
+    <div class="teams-panel">
+        <div class="panel-header">
+            <h4>Équipes du Projet</h4>
+            <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded p-button-success"
+                (click)="openTeamDialog()" pTooltip="Nouvelle équipe"></button>
+        </div>
+        <div class="panel-content">
+            <!-- Skeleton Loader pour les équipes -->
+            <div *ngIf="loadingTeams">
+                <div *ngFor="let i of [1,2,3]" class="team-item-skeleton"></div>
+            </div>
+            <!-- Liste des équipes -->
+            <ng-container *ngIf="!loadingTeams">
+                <div *ngFor="let equipe of projetEquipes" class="team-item"
+                    [class.is-active]="selectedEquipe?.projetequipeID === equipe.projetequipeID"
+                    (click)="selectEquipe(equipe)" tabindex="0">
+                    <div class="team-info">
+                        <span class="team-name">{{ equipe.designation }}</span>
+                    </div>
+                    <div class="team-actions">
+                        <i class="pi pi-pencil action-icon"
+                            (click)="openTeamDialog(equipe); $event.stopPropagation()"></i>
+                        <i class="pi pi-trash action-icon-danger" (click)="confirmDeleteTeam($event, equipe)"></i>
+                    </div>
+                </div>
+                <!-- État vide pour les équipes -->
+                <div *ngIf="projetEquipes.length === 0" class="empty-state">
+                    <i class="fa fa-users-slash fa-3x text-muted mb-3"></i>
+                    <h4>Aucune équipe</h4>
+                    <p class="text-muted">Créez votre première équipe pour commencer à assigner des membres.</p>
+                </div>
+            </ng-container>
+        </div>
+        <div class="panel-footer">
+            <button class="btn btn-outline-secondary w-100" (click)="backToList()">
+                <i class="fas fa-circle-left mr-2"></i> {{ 'Retour' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <!-- PANNEAU DE DROITE : GESTION DES MEMBRES -->
+    <div class="members-panel-wrapper">
+        <!-- État initial quand aucune équipe n'est sélectionnée -->
+        <div *ngIf="!selectedEquipe && !loadingTeams" class="initial-prompt">
+            <i class="fa fa-arrow-left fa-3x text-muted mb-3"></i>
+            <h4>Sélectionnez une équipe</h4>
+            <p class="text-muted">Choisissez une équipe dans la liste de gauche pour gérer ses membres.</p>
+        </div>
+
+        <!-- Contenu du gestionnaire de membres -->
+        <ng-container *ngIf="selectedEquipe">
+            <div class="assign-body">
+                <!-- PARTIE GAUCHE DU PANNEAU DE DROITE : LISTE DES MEMBRES -->
+                <div class="members-list-panel">
+                    <div class="search-bar">
+                        <i class="fa fa-search search-icon"></i>
+                        <input type="text" class="form-control" placeholder="Rechercher par nom, prénom..."
+                            [(ngModel)]="searchTerm" (ngModelChange)="filterMembers()">
+                    </div>
+
+                    <div *ngIf="loadingMembers" class="members-grid">
+                        <div *ngFor="let i of [1,2,3,4,5,6]" class="member-card-skeleton">
+                            <div class="avatar-skeleton"></div>
+                            <div class="info-skeleton">
+                                <div class="line-skeleton"></div>
+                                <div class="line-skeleton short"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!loadingMembers" class="members-grid-wrapper">
+                        <div class="members-grid">
+                            <div *ngFor="let membre of filteredMembers" class="member-card"
+                                [class.is-selected]="isSelected(membre)" (click)="toggleSelection(membre)">
+                                <div class="member-avatar">{{ getInitials(membre) }}</div>
+                                <div class="member-info">
+                                    <div class="member-name">{{ membre.prenom }} {{ membre.nom }}</div>
+                                    <div class="member-role text-muted">{{ membre.email }}</div>
+                                </div>
+                                <div class="selection-indicator"><i class="fa fa-check-circle"></i></div>
+                            </div>
+                        </div>
+                        <div *ngIf="filteredMembers.length === 0" class="empty-state">
+                            <i class="fa fa-user-slash fa-3x text-muted mb-3"></i>
+                            <h4>Aucun membre trouvé</h4>
+                            <p class="text-muted">Aucun membre ne correspond à votre recherche ou n'est disponible pour
+                                ce projet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PARTIE DROITE DU PANNEAU DE DROITE : MEMBRES SÉLECTIONNÉS ET ACTIONS -->
+                <div class="sidebar">
+                    <div class="sidebar-header">
+                        <h5>Membres Assignés ({{ selectedMembres.size }})</h5>
+                    </div>
+                    <div class="sidebar-content">
+                        <ng-container *ngIf="selectedMembres.size > 0; else noSelection">
+                            <div *ngFor="let s_membre of selectedMembresList" class="selected-member-item">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="member-avatar-small">{{ getInitials(s_membre) }}</div>
+                                    <div class="member-info">
+                                        <div class="member-name">{{ s_membre.prenom }} {{ s_membre.nom }}</div>
+                                    </div>
+                                </div>
+
+                                <select class="form-select" [(ngModel)]="s_membre.roleID"
+                                    name="proprietaireID">
+                                    <option value="undefined" selected>
+                                        {{ 'selProp' | translate }}
+                                    </option>
+                                    <option *ngFor="let prop of roles" [ngValue]="prop.roleID">
+                                        {{ prop.designation }}
+                                    </option>
+                                </select>
+                                <input type="text" class="form-control form-control-sm"
+                                    placeholder="Note/description (optionnel)" [(ngModel)]="s_membre.description">
+                            </div>
+                        </ng-container>
+                        <ng-template #noSelection>
+                            <div class="empty-state">
+                                <i class="fa fa-hand-pointer fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Cliquez sur les membres à gauche pour les assigner à l'équipe
+                                    <strong>{{ selectedEquipe.designation }}</strong>.</p>
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="sidebar-footer">
+                        <button class="btn btn-primary w-100" (click)="saveMemberAssignments()"
+                            [disabled]="loadingMembers">
+                            <span *ngIf="loadingMembers" class="spinner-border spinner-border-sm" role="status"
+                                aria-hidden="true"></span>
+                            <span *ngIf="!loadingMembers">{{ 'Appliquer les changements' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+
+<!-- MODALE POUR AJOUTER/MODIFIER UNE ÉQUIPE -->
+<p-dialog header="{{ equipeToEdit.projetequipeID ? 'Modifier l équipe' : 'Nouvelle équipe' }}"
+    [(visible)]="dialogEquipeAdd" [modal]="true" [style]="{width: '500px'}">
+    <div class="form-group">
+        <label for="teamName">Nom de l'équipe <span class="text-danger">*</span></label>
+        <input id="teamName" type="text" pInputText class="w-100" [(ngModel)]="equipeToEdit.designation" />
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="{{'Annuler' | translate}}" icon="pi pi-times" class="p-button-text"
+            (click)="dialogEquipeAdd=false"></button>
+        <button pButton pRipple label="{{'Enregistrer' | translate}}" icon="pi pi-check" (click)="saveTeam()"
+            [disabled]="!equipeToEdit.designation"></button>
+    </ng-template>
+</p-dialog>

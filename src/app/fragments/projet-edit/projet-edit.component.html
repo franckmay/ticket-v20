@@ -1,0 +1,140 @@
+<div class="container-fluid texte">
+    <div class="row justify-content-center">
+        <div class="card border-0 cont bg-light">
+            <div class="row mb-2 mt-1 align-items-center">
+                <div class="col-12 col-md-6">
+                    <p-button [style]="{ height: '35px' }" icon="fas fa-circle-left" (click)="backToList()"
+                        pTooltip="{{ 'backTo' | translate }}" tooltipPosition="top" styleClass="p-button-secondary">
+                    </p-button>&nbsp;&nbsp;
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <form #f="ngForm" (ngSubmit)="saveProjet(f)" novalidate>
+
+                <div class="row mb-2">
+                    <!-- Priorité-->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            {{ 'Priorite' | translate }}<span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" name="priorite" [(ngModel)]="projet.priorite"
+                            [disabled]="action === 'view'" required
+                            [ngClass]="{ 'is-invalid': f.submitted && !projet.priorite }">
+                            <option value="" selected>{{ 'select_priorite' | translate }}</option>
+                            <option *ngFor="let p of priorites" [value]="p.niveau">
+                                {{ p.libelleFr }}
+                            </option>
+                        </select>
+                        <div *ngIf="f.submitted && !projet.priorite" class="invalid-feedback">
+                            {{ 'Ce champ est obligatoire' | translate }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6" *ngIf="projet.status">
+                        <label class="form-label">{{ 'Status' | translate }}</label>
+                        <select class="form-select" name="status" [(ngModel)]="projet.status"
+                            [disabled]="true">
+                            <option value="" disabled selected>{{ 'select_status' | translate }}</option>
+                            <option *ngFor="let s of optionsStatus" [value]="s.value">
+                                {{ s.label }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row gy-3">
+                    <!-- Intitulés FR / US -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            {{ 'intituleFrFT' | translate }}<span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" name="libelleFr" rows="2" [(ngModel)]="projet.libelleFr"
+                            [disabled]="action === 'view'" required
+                            [ngClass]="{ 'is-invalid': f.submitted && !projet.libelleFr }"></textarea>
+                        <div *ngIf="f.submitted && !projet.libelleFr" class="invalid-feedback">
+                            {{ 'Ce champ est obligatoire' | translate }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">{{ 'intituleUsFT' | translate }}</label>
+                        <textarea class="form-control" name="libelleUs" rows="2" [(ngModel)]="projet.libelleUs"
+                            [disabled]="action === 'view'"></textarea>
+                    </div>
+
+                    <!-- Dates et durée -->
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">
+                            {{ 'dateDebut' | translate }}<span class="text-danger">*</span>
+                        </label>
+                        <input type="date" class="form-control" name="dateDebut" [(ngModel)]="projet.dateDebut"
+                            (ngModelChange)="computeDuree()" [disabled]="action === 'view'" required
+                            [ngClass]="{ 'is-invalid': f.submitted && !projet.dateDebut }" />
+                        <div *ngIf="f.submitted && !projet.dateDebut" class="invalid-feedback">
+                            {{ 'Ce champ est obligatoire' | translate }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">
+                            {{ 'dateFin' | translate }}<span class="text-danger">*</span>
+                        </label>
+                        <input type="date" class="form-control" name="dateFin" [(ngModel)]="projet.dateFin"
+                            (ngModelChange)="computeDuree()" [disabled]="action === 'view'" required
+                            [ngClass]="{ 'is-invalid': f.submitted && !projet.dateFin }" />
+                        <div *ngIf="f.submitted && !projet.dateFin" class="invalid-feedback">
+                            {{ 'Ce champ est obligatoire' | translate }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">{{ 'duree' | translate }}</label>
+                        <input type="text" class="form-control" name="duree" [(ngModel)]="projet.duree"
+                            [disabled]="true" />
+                    </div>
+
+                    <!-- DoR / DoD -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            {{ 'DoR' | translate }}
+                        </label>
+                        <textarea class="form-control" name="DoR" rows="3" [(ngModel)]="projet.DoR"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            {{ 'DoD' | translate }}
+                        </label>
+                        <textarea class="form-control" name="DoD" rows="3" [(ngModel)]="projet.DoD"></textarea>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">{{ 'Description' | translate }}</label>
+                        <textarea class="form-control" name="description" rows="3" [(ngModel)]="projet.description"
+                            [disabled]="action === 'view'"></textarea>
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-success" *ngIf="!displaySpinner"
+                            [disabled]="action === 'view'">
+                            <i class="fas fa-save me-1"></i>
+                            {{ 'enregistrer' | translate }}
+                        </button>
+                        <button class="btn btn-primary" type="button" disabled *ngIf="displaySpinner">
+                            <span class="spinner-grow spinner-grow-sm"></span>
+                            {{ 'Chargement...' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SPINNER DE CHARGEMENT DU TREETABLE -->
+    <div class="progress-spinner" *ngIf="displaySpinner" style="z-index: 9999;">
+        <div class="d-flex justify-content-center">
+            <p-progressSpinner styleClass="custom-spinner" strokeWidth="4" animationDuration=".5s"></p-progressSpinner>
+        </div>
+        <div class="d-flex justify-content-center affiche">
+            <h6 style="color: rgb(255, 255, 255);z-index: 9999;">{{ 'Chargement' | translate }}...</h6>
+        </div>
+    </div>

@@ -1,0 +1,93 @@
+
+.header-container {
+    background: linear-gradient(to right,  #fbfbfb, #003366);
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+    position: relative;
+  }
+  
+  .header-container img {
+    max-height: 100px;
+  }
+  
+  .header-title {
+    font-weight: bold;
+  }
+  
+  .header-subtitle {
+    font-size: 1rem;
+  }
+  
+  .coat-of-arms,
+  .logo {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .coat-of-arms {
+    // left: 20px;
+    right: 20px;
+  }
+  
+  .logo {
+  
+    // right: 20px;
+    left: 20px;
+  }
+  //-----------------------------------------------------------------------------------
+  
+  
+  nav.navbar {
+    font-family: Arial, sans-serif;
+    font-size: 0.95rem;
+  }
+  
+  .navbar .navbar-brand img {
+    object-fit: cover;
+  }
+  
+  .nav-link {
+    color: #000 !important;
+    margin-right: 15px;
+  }
+  
+  .nav-link.active {
+    font-weight: 600;
+  }
+  
+  .btn-link {
+    font-weight: 500;
+  }
+  
+  .btn-primary {
+    background-color: #0056d2;
+    border-color: #0056d2;
+  }
+  
+  .btn-primary:hover {
+    background-color: #003da1;
+    border-color: #003da1;
+  }
+  
+  
+  footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  
+  
+  .loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(22, 21, 21, 0.8);
+    /* Fond blanc avec opacité */
+    z-index: 1050;
+    /* Au-dessus des autres éléments */
+  }
+  

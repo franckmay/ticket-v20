@@ -1,0 +1,23 @@
+export class Organisation {
+    organisationID!:string
+    code!:string
+    abbreviationFr!:string
+    abbreviationUs!:string
+    libelleFr!:string
+    libelleUs!:string
+    ville!:string
+    piedpage!:string
+    boitePortale!:string
+    activite!:string
+    telephone!:string
+    email!:string
+    localite!:string
+    localiteID!:string
+    secteurID!:string
+    sousCategorieID!:string
+    budgetModeID!:string
+    comptabiliteDC!:boolean
+    user_update!:string;
+    ip_update!:string;
+    last_update!:string;
+}

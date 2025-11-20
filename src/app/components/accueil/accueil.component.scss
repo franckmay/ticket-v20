@@ -1,0 +1,113 @@
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(22, 21, 21, 0.8);
+    z-index: 1050;
+}
+
+
+
+/* Curseur “pointer” partout où c’est cliquable */
+.list-group-item-action,
+.card.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Transition pour les cartes sélectionnées */
+.card.border-primary {
+    transition: box-shadow 0.2s ease-in-out;
+    box-shadow: 0 0 0 0 #007bff;
+
+    &:hover {
+        box-shadow: 0 0 10px rgba
+    }
+}
+
+
+
+
+.selected {
+    border: 2px solid #0d6efd !important;
+}
+
+.card-header .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+
+
+/* projet-vue.component.scss */
+
+/* Ligne 2 : icônes uniformisées */
+.line-2 i {
+    width: 1rem;
+    text-align: center;
+    opacity: 0.85;
+}
+
+/* Boutons actions réduits */
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: inherit;
+    padding: 0.2rem;
+    margin-left: 0.3rem;
+    font-size: 0.9rem;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+/* Exemple couleurs full background selon statut */
+.task-card-compact {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    .line-1 {
+        font-weight: 600;
+    }
+
+    .line-2 {
+        font-size: 0.85rem;
+    }
+
+    .line-3 {
+        margin-top: 0.25rem;
+    }
+
+    &.status-10 {
+        background: #8d9092;
+        /* secondary */
+    }
+
+    &.status-20 {
+        background: #0d6efd;
+        /* primary */
+    }
+
+    &.status-30 {
+        background: #0dcaf0;
+        color: #000;
+        /* info */
+    }
+
+    &.status-40 {
+        background: #198754;
+        /* success */
+    }
+
+    &.status-50 {
+        background: #212529;
+        /* dark */
+    }
+}

@@ -1,0 +1,145 @@
+
+
+:host {
+    --primary-color: #0d6efd;
+    --primary-color-light: #e7f1ff;
+    --border-color: #dee2e6;
+    --background-color: #fff;
+    --sidebar-background: #f8f9fa;
+    --text-color: #212529;
+    --text-muted: #6c757d;
+    --avatar-bg: #e9ecef;
+    --card-hover-bg: #f1f3f5;
+    --active-item-bg: var(--primary-color-light);
+}
+
+.team-manager-container {
+    display: flex;
+    height: 80vh;
+    width: 100%;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+// --- Panneau de gauche (Équipes) ---
+.teams-panel {
+    flex: 0 0 320px;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        flex-shrink: 0;
+    }
+
+    .panel-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem;
+    }
+    
+    .panel-footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        flex-shrink: 0;
+    }
+}
+
+.team-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-bottom: 0.25rem;
+    
+    &:hover {
+        background-color: var(--card-hover-bg);
+    }
+
+    &.is-active {
+        background-color: var(--active-item-bg);
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    .team-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .team-actions {
+        display: flex;
+        gap: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        .action-icon { color: var(--text-muted); &:hover { color: var(--primary-color); } }
+        .action-icon-danger { color: var(--text-muted); &:hover { color: #dc3545; } }
+    }
+    &:hover .team-actions {
+        opacity: 1;
+    }
+}
+
+.team-item-skeleton {
+    height: 48px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    margin: 0.5rem;
+    opacity: 0.5;
+}
+
+// --- Panneau de droite (Membres) ---
+.members-panel-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .initial-prompt {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+        background-color: var(--sidebar-background);
+    }
+}
+
+// Réutiliser les styles du composant précédent pour la partie membre
+// (J'ai copié/collé et intégré les classes ici pour que ce soit complet)
+.assign-body { display: flex; flex: 1; overflow: hidden; }
+.members-list-panel { flex: 3; display: flex; flex-direction: column; padding: 1.5rem; border-right: 1px solid var(--border-color); overflow: hidden; }
+.search-bar { /* ... styles du composant précédent ... */ }
+.members-grid-wrapper { flex: 1; overflow-y: auto; }
+.members-grid { /* ... */ }
+.member-card { /* ... */ }
+.member-avatar { /* ... */ }
+.member-info { /* ... */ }
+.selection-indicator { /* ... */ }
+.sidebar { /* ... */ }
+.sidebar-header, .sidebar-content, .sidebar-footer { /* ... */ }
+.selected-member-item { /* ... */ }
+.member-card-skeleton, .avatar-skeleton, .info-skeleton { /* ... */ }
+.empty-state { /* ... */ }
+
+// Copie des styles pertinents de l'exemple
+.search-bar { position: relative; margin-bottom: 1.5rem; .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); } .form-control { padding-left: 35px; border-radius: 8px; } }
+.members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.member-card { display: flex; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; position: relative; transition: all 0.2s ease-in-out; &:hover { background-color: var(--card-hover-bg); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); } &.is-selected { border-color: var(--primary-color); background-color: var(--primary-color-light); .selection-indicator { opacity: 1; transform: scale(1); } } }
+.member-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--avatar-bg); color: var(--text-muted); font-weight: bold; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
+.member-info { overflow: hidden; .member-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .member-role { font-size: 0.85em; color: var(--text-muted); } }
+.selection-indicator { position: absolute; top: 8px; right: 8px; color: var(--primary-color); font-size: 1.2em; opacity: 0; transform: scale(0.5); transition: all 0.2s ease-in-out; }
+.sidebar { flex: 2; max-width: 400px; background-color: var(--sidebar-background); display: flex; flex-direction: column; .sidebar-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); flex-shrink: 0; } .sidebar-content { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; } .selected-member-item .member-avatar-small { width: 32px; height: 32px; font-size: 0.9em; @extend .member-avatar; } .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-color); display: flex; gap: 1rem; flex-shrink: 0; } }
+.member-card-skeleton { @extend .member-card; cursor: default; .avatar-skeleton { @extend .member-avatar; background-color: #e0e0e0; } .info-skeleton { width: 100%; .line-skeleton { height: 12px; background-color: #e0e0e0; border-radius: 4px; margin-bottom: 8px; &.short { width: 60%; } } } &:hover { transform: none; box-shadow: none; } }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; padding: 2rem; }

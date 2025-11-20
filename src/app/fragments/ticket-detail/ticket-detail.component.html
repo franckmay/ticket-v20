@@ -1,0 +1,105 @@
+<div class="ticket-detail-card">
+    <!-- En-tête -->
+    <div class="td-header">
+      <div>
+        <h2 class="td-title">{{ ticket.libelleFr }}</h2>
+        <small class="td-subtitle" *ngIf="ticket.libelleUs">{{ ticket.libelleUs }}</small>
+      </div>
+      <span class="badge status-badge" [ngClass]="getStatusClass(ticket.status)">
+        {{ ticket.statusLibelle }}
+      </span>
+    </div>
+  
+    <!-- Liste des infos, 1 item / ligne -->
+    <div class="td-items">
+      <div class="td-item">
+        <i class="fas fa-folder-open"></i>
+        <span class="label">Projet</span>
+        <span class="value">{{ ticket.projetLibelle }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-list"></i>
+        <span class="label">Type</span>
+        <span class="value">{{ ticket.typeTicketID }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-layer-group"></i>
+        <span class="label">Niveau</span>
+        <span class="value">{{ getTitre(ticket.niveau) }}</span>
+      </div>
+      <div class="td-item" *ngIf="ticket.parentID">
+        <i class="fas fa-sitemap"></i>
+        <span class="label">Parent</span>
+        <span class="value">{{ ticket.parentID }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span class="label">Date début</span>
+        <span class="value">{{ ticket.dateDebut | date:'dd MMM yyyy' }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-calendar-check"></i>
+        <span class="label">Date fin</span>
+        <span class="value">{{ ticket.dateFin | date:'dd MMM yyyy' }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-hourglass-half"></i>
+        <span class="label">Durée</span>
+        <span class="value">{{ ticket.duree }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-percentage"></i>
+        <span class="label">Exécution</span>
+        <span class="value">{{ ticket.tauxExecution }} %</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-balance-scale"></i>
+        <span class="label">Poids</span>
+        <span class="value">{{ ticket.poids }} %</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="label">Priorité</span>
+        <span class="value"><span class="badge bg-warning text-dark">{{ ticket.prioriteLibelle }}</span></span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-info-circle"></i>
+        <span class="label">État</span>
+        <span class="value"><span class="badge bg-info text-white">{{ ticket.etat }}</span></span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-pen-alt"></i>
+        <span class="label">Dernière maj</span>
+        <span class="value">{{ ticket.last_update | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-user"></i>
+        <span class="label">Par</span>
+        <span class="value">{{ ticket.user_update }}</span>
+      </div>
+      <div class="td-item">
+        <i class="fas fa-network-wired"></i>
+        <span class="label">IP</span>
+        <span class="value">{{ ticket.ip_update }}</span>
+      </div>
+    </div>
+  
+    <!-- Description & critères -->
+    <div class="td-section">
+      <h4>Description</h4>
+      <p>{{ ticket.description || 'Aucune description.' }}</p>
+    </div>
+    <div class="td-section">
+      <h4>Critères de qualité</h4>
+      <p>{{ ticket.criteresqualite || 'Non défini.' }}</p>
+    </div>
+  
+    <!-- Commentaires -->
+    <div class="td-comments">
+      <textarea class="form-control" rows="3" placeholder="Écrire un commentaire…"></textarea>
+      <button class="btn btn-success">
+        <i class="fas fa-paper-plane"></i> Publier
+      </button>
+    </div>
+  </div>
+  
