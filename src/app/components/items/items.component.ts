@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -16,10 +16,7 @@ import { Organisation } from '../../class/organisation';
 import { Ticket } from '../../class/ticket';
 import { ApiService } from '../../services/api.service';
 import { SessionStorageService } from '../../services/session/session-storage.service';
-import { NotificationService } from '../../services/notifications/notification.service';
-import { Ticketmembre } from '../../class/ticketmembre';
 import { Priorite } from '../../class/priorite';
-import { ProjetMembre } from '../../class/projet-membre';
 import { Projets } from '../../class/projets';
 
 // Composants Enfants

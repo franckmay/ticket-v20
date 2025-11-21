@@ -1,147 +1,312 @@
-/* --- GLOBAL LAYOUT --- */
-:host { 
-    display: block; 
-    height: 100vh; 
-    background-color: #050505; 
-    font-family: 'Inter', sans-serif; 
-    overflow: hidden; 
+@use "sass:color";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:host {
+    display: block;
+    height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background-color: #F3F4F6; /* Fond gris clair global */
+    color: #111827;
 }
 
-.container-fluid { height: 100vh; }
-.sub-text { color: #888; font-size: 0.95rem; line-height: 1.5; }
-.text-green { color: #10b981; }
-.cursor-pointer { cursor: pointer; }
+/* --- VARIABLES --- */
+$primary-black: #111827;
+$border-color: #E5E7EB;
+$input-bg: #FFFFFF;
+$text-muted: #6B7280;
+$primary-green: #00A86B; /* Pour les accents */
 
-/* --- LEFT SIDE (PHYSICS) --- */
-.visual-side {
-    background-color: #0b0c10;
+/* --- LAYOUT CENTRÉ --- */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-card {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 1100px; /* Largeur max de la carte */
+    height: auto;
+    min-height: 650px; /* Hauteur min pour l'aspect ratio */
+    border-radius: 24px; /* Coins très arrondis */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     overflow: hidden;
+}
+
+/* --- LEFT VISUAL SIDE --- */
+.visual-side {
+    background: url('/back.jpg') no-repeat center center;
+    background-size: cover;
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 60px;
-    user-select: none;
-    height: 100%;
-    border-right: 1px solid #1a1a1a;
+    justify-content: space-between; /* Logo haut, Texte bas */
+    padding: 40px;
+    color: #FFFFFF;
+
+    /* Overlay sombre progressif pour lisibilité */
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        z-index: 1;
+    }
 }
 
-@media(max-width: 992px) { 
-    .visual-side { display: none; } /* Hide on mobile */
+.brand-logo-visual, .visual-content {
+    position: relative;
+    z-index: 2;
 }
 
-#bg-animation, #physics-canvas {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-}
-#bg-animation { z-index: 0; }
-#physics-canvas { z-index: 1; pointer-events: auto; }
-
-.hero-text {
-    position: relative; 
-    z-index: 0; 
-    margin-top: auto; 
-    margin-bottom: 150px; 
-    pointer-events: none;
+.brand-logo-visual {
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
 }
 
-.hero-text h1 {
-    font-size: 3.5rem; 
-    font-weight: 700; 
-    margin: 0; 
-    line-height: 1.1;
-    background: linear-gradient(to right, #e2e8f0, #94a3b8); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent;
+.visual-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
 }
-.hero-text p { color: #64748b; margin-top: 20px; font-size: 1.2rem; max-width: 300px; }
 
-/* Floating Cards */
-.physics-dom-element {
-    position: absolute; top: 0; left: 0; width: 160px; height: 160px;
-    background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px;
-    padding: 24px; display: flex; flex-direction: column; justify-content: space-between;
-    color: #e2e8f0; font-size: 0.9rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    pointer-events: none; z-index: 2; will-change: transform;
+.visual-desc {
+    font-size: 1rem;
+    opacity: 0.9;
+    max-width: 80%;
+    margin-bottom: 2rem;
 }
-.physics-dom-element strong { font-size: 1.3rem; display: block; margin-bottom: 5px; color: white; font-weight: 500; }
-.physics-dom-element.highlight { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; }
-.physics-dom-element.highlight strong { color: #6ee7b7; }
-.icon-box {
-    width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+
+.slider-indicators {
+    display: flex;
+    gap: 8px;
+    
+    span {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transition: 0.3s;
+        
+        &.active {
+            background: #FFFFFF;
+            width: 24px; /* Indicateur allongé */
+            border-radius: 4px;
+        }
+    }
 }
-.physics-dom-element.highlight .icon-box { background: #10b981; color: #022c22; }
 
-/* --- RIGHT SIDE (FORM) --- */
-.form-side { background-color: #000; height: 100%; position: relative; z-index: 10; }
-.brand-logo { color: #10b981; font-weight: 600; font-size: 1.2rem; letter-spacing: 0.5px; }
+/* --- RIGHT FORM SIDE --- */
+.form-side {
+    padding: 40px 60px; /* Padding généreux */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 
-/* Modern Inputs */
-.input-wrapper { position: relative; }
+.form-content {
+    width: 100%;
+    max-width: 400px; /* Largeur contrainte du formulaire */
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: $primary-black;
+}
+
+.sub-text {
+    color: $text-muted;
+    font-size: 0.95rem;
+}
+
+/* --- INPUTS STYLE 'HAFIZDZAKI' --- */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.25rem;
+}
+
+.input-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $primary-black;
+    margin-bottom: 0.5rem;
+}
+
 .modern-input {
-    width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px solid #333;
-    padding: 16px 16px 16px 45px; border-radius: 12px; color: white; font-size: 1rem;
-    transition: all 0.3s ease; height: 56px;
-}
-.modern-input:focus {
-    background: rgba(16, 185, 129, 0.05); border-color: #10b981;
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); outline: none;
-}
-.floating-label {
-    position: absolute; left: 45px; top: 50%; transform: translateY(-50%);
-    color: #666; pointer-events: none; transition: all 0.2s ease; font-size: 1rem;
-}
-.modern-input:focus ~ .floating-label,
-.modern-input:not(:placeholder-shown) ~ .floating-label {
-    top: 0; left: 12px; transform: translateY(-50%) scale(0.85);
-    background: #000; padding: 0 6px; color: #10b981; font-weight: 500;
-}
-.input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #555; transition: color 0.3s; }
-.modern-input:focus ~ .input-icon { color: #10b981; }
-.password-toggle { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #555; cursor: pointer; }
-.password-toggle:hover { color: white; }
-
-/* OTP Specifics */
-.otp-input { 
-    width: 3.5rem !important; height: 3.5rem !important; 
-    padding: 0 !important; font-size: 1.5rem; font-weight: 600;
-}
-.icon-circle {
-    width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.1);
-    color: #10b981; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid $border-color;
+    border-radius: 8px; /* Arrondi moyen */
+    font-size: 1rem;
+    color: $primary-black;
+    background: $input-bg;
+    transition: all 0.2s;
+    
+    &::placeholder {
+        color: #9CA3AF;
+    }
+    
+    &:focus {
+        outline: none;
+        border-color: $primary-black; /* Focus noir */
+        box-shadow: 0 0 0 1px $primary-black;
+    }
 }
 
-/* Buttons */
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 38px; /* Ajusté pour être centré dans l'input */
+    color: $text-muted;
+    cursor: pointer;
+    font-size: 1rem;
+    
+    &:hover { color: $primary-black; }
+}
+
+/* --- BUTTONS --- */
 .submit-btn {
-    width: 100%; background: #10b981; color: #000; border: none; padding: 16px;
-    border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer;
-    transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+    width: 100%;
+    background-color: $primary-black;
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 14px;
+    border-radius: 8px; /* Match input radius */
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    
+    &:hover:not(:disabled) {
+        background-color: lighten($primary-black, 10%);
+    }
+    
+    &:disabled {
+        background-color: #9CA3AF;
+        cursor: not-allowed;
+    }
 }
-.submit-btn:hover:not(:disabled) { background: #34d399; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2); }
-.submit-btn:disabled { background: #064e3b; color: #666; cursor: not-allowed; }
 
-.forgot-link { color: #10b981; text-decoration: none; font-weight: 500; transition: 0.2s; }
-.forgot-link:hover { opacity: 0.8; }
-
-/* Divider & Social */
-.divider { display: flex; align-items: center; color: #444; margin: 30px 0; font-size: 0.85rem; text-transform: uppercase; }
-.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #222; }
-.divider span { padding: 0 15px; }
-.social-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .social-btn {
-    background: #111; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px;
-    cursor: pointer; transition: 0.2s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid $border-color;
+    color: $primary-black;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 50px; /* Pill shape for social */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    
+    &:hover {
+        background-color: #F9FAFB;
+        border-color: #D1D5DB;
+    }
 }
-.social-btn:hover { background: #222; border-color: #555; }
 
-/* Alerts */
-.alert-danger-glass {
-    background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3);
-    color: #f87171; border-radius: 8px; padding: 12px; font-size: 0.9rem;
+/* --- EXTRAS --- */
+.form-extras {
+    font-size: 0.9rem;
 }
-.alert-warning { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); color: #facc15; border-radius: 8px; }
+
+.custom-checkbox {
+    accent-color: $primary-black;
+    width: 16px; height: 16px;
+}
+
+.forgot-link {
+    color: $primary-black;
+    text-decoration: none;
+    font-size: 0.9rem;
+    
+    &:hover { text-decoration: underline; }
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: $text-muted;
+    font-size: 0.85rem;
+    
+    &::before, &::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid $border-color;
+    }
+    
+    span { padding: 0 10px; }
+}
+
+/* --- OTP --- */
+.otp-input {
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 4px;
+    
+    &:focus {
+        border-color: $primary-green;
+        box-shadow: 0 0 0 1px $primary-green;
+    }
+}
+
+.icon-shield {
+    font-size: 3rem;
+    color: $primary-black;
+}
+
+/* --- ALERTS --- */
+.alert {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+.alert-danger { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+.alert-warning { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+    .login-card {
+        flex-direction: column;
+        max-width: 500px;
+        min-height: auto;
+    }
+    
+    .visual-side {
+        display: none !important; /* Hide image on mobile */
+    }
+    
+    .form-side {
+        padding: 30px;
+    }
+}
 
 .loader-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1050;
+    background: rgba(255,255,255,0.8); z-index: 2000;
     display: flex; align-items: center; justify-content: center;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

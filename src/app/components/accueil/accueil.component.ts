@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Indispensable pour *ngIf, *ngFor
 import { FormsModule, NgForm } from '@angular/forms'; // Pour [(ngModel)] et NgForm
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core'; // Pour le pipe | translate
 
 // PrimeNG Modules (Déduits de votre HTML)
@@ -11,8 +11,6 @@ import { DialogModule } from 'primeng/dialog';
 // Services
 import { SessionStorageService } from '../../services/session/session-storage.service';
 import { ApiService } from '../../services/api.service';
-import { AuthService } from '../../services/auth/_services/auth.service';
-import { NotificationService } from '../../services/notifications/notification.service';
 
 // Models
 import { FindParam } from '../../class/dto/find-param';

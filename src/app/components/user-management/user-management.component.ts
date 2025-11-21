@@ -9,6 +9,8 @@ import { AuthService } from '../../services/auth/_services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { FindParam } from '../../class/dto/find-param';
 import { SessionStorageService } from '../../services/session/session-storage.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-user-management',
@@ -19,7 +21,8 @@ import { SessionStorageService } from '../../services/session/session-storage.se
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    TranslateModule
   ]
 })
 export class UserManagementComponent implements OnInit {
@@ -42,7 +45,8 @@ export class UserManagementComponent implements OnInit {
   formError = '';
   private idCounter = 1;
   fparam: any;
-  constructor(private fb: FormBuilder, private ts: SessionStorageService, private auth: AuthService, private api: ApiService) {
+  constructor(private fb: FormBuilder, private ts: SessionStorageService, private auth: AuthService, private api: ApiService,
+     private translate: TranslateService) {
     this.userForm = this.fb.group({
       login: ['', Validators.required],
       organisationID: ['', Validators.required],
@@ -57,6 +61,7 @@ export class UserManagementComponent implements OnInit {
       confirmPassword: ['']
     });
     this.fparam = new FindParam(this.ts.getOrganisation(), this.ts.getUser().login);
+    this.translate.use('fr');
   }
 
   ngOnInit(): void { this.loadUsers(); this.organisationList(); }

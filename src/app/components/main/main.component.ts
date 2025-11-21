@@ -6,7 +6,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Groupe } from '../../class/groupe';
 import { Permission } from '../../class/role/permission';
 import { SessionStorageService } from '../../services/session/session-storage.service';
-import { NotificationService } from '../../services/notifications/notification.service';
 import { FindParam } from '../../class/dto/find-param';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth/_services/auth.service';
@@ -34,7 +33,7 @@ export class MainComponent {
   fparam: any;
   currentLang: string = 'fr';
   constructor(private router: Router, public translate: TranslateService, private auth: AuthService,
-    private ts: SessionStorageService, private api: ApiService, private notificationService: NotificationService) {
+    private ts: SessionStorageService, private api: ApiService) {
     const browserLang = this.translate.getBrowserLang() || 'fr';
     this.currentLang = browserLang;
     this.translate.setDefaultLang(browserLang);
@@ -58,25 +57,6 @@ export class MainComponent {
     this.translate.use(lang);
   }
   //--------------------------------------------------------------------------------
-  // Afficher les toasts dès qu'une notification est reçuegetNotifications() {
-  getNotifications() {
-    this.notificationService.getNotifications().subscribe((data: string) => {
-      const titleMatch = data.match(/\[(.*?)\]/); // Capture le texte entre []
-      const title = titleMatch ? titleMatch[1] : 'Notification'; // Par défaut, "Notification" si pas de titre
-      const message = data.replace(/\[.*?\]\s*/, '');
-
-      // Ajouter la notification formatée à la liste
-      this.notifications.push({
-        title: title, // Titre extrait
-        message: message.trim(), // Message sans espaces inutiles
-        timestamp: new Date(), // Horodatage
-        route: null // Tu peux ajuster si une route est liée
-      });
-    });
-  }
-
-
-
 
 
   // Gestion du clic sur une notification

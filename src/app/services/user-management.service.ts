@@ -13,6 +13,11 @@ export class UserManagementService {
     this.apiUrl = this.configService.getConfig().serverIP;
   }
 
+  // --- Vérification Initiale ---
+  checkAdminExists(): Observable<any> {
+    return this.http.get(`${this.apiUrl}authentication/check-admin`);
+  }
+
   // --- Gestion Utilisateurs (CRUD) ---
   list(filter: any): Observable<any> {
     return this.http.post(`${this.apiUrl}user/list`, filter);
