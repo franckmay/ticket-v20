@@ -1,0 +1,156 @@
+
+//confirmation-modal.component.scss
+
+// Variables pour un style cohérent et facile à maintenir
+:host {
+  --danger-color: #d9534f;
+  --danger-hover: #c9302c;
+  --secondary-color: #6c757d;
+  --secondary-hover: #5a6268;
+  --overlay-bg: rgba(33, 37, 41, 0.6);
+  --content-bg: #ffffff;
+  --text-color: #212529;
+  --muted-color: #6c757d;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
+}
+
+// L'overlay qui couvre toute la page
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--overlay-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn var(--transition-speed) ease-out;
+}
+
+// Le conteneur principal de la modale
+.modal-content {
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 420px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn var(--transition-speed) ease-out;
+}
+
+// Le corps de la modale
+.modal-body {
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+// Conteneur de l'icône principale
+.icon-container {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background-color: rgba(217, 83, 79, 0.1); // Fond léger de la couleur danger
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-danger 2s infinite;
+
+  i {
+    font-size: 2.5rem;
+    color: var(--danger-color);
+  }
+}
+
+// Titre de la question
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+}
+
+// Message descriptif
+.modal-message {
+  font-size: 1rem;
+  color: var(--muted-color);
+  line-height: 1.6;
+}
+
+// Pied de page contenant les boutons
+.modal-footer {
+  background-color: #f8f9fa;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid #dee2e6;
+}
+
+// Style de base des boutons
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Bouton secondaire (Annuler)
+.btn-secondary {
+  background-color: #e9ecef;
+  color: var(--secondary-color);
+  &:hover {
+    background-color: #d6dade;
+    color: var(--secondary-hover);
+  }
+}
+
+// Bouton de confirmation (Danger)
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background-color: var(--danger-hover);
+  }
+}
+
+// --- Animations ---
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-danger {
+  0% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(217, 83, 79, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0); }
+}

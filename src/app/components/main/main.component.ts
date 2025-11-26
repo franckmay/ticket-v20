@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router'; // Important pour le <router-outlet>
+import { RouterModule, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { Groupe } from '../../class/groupe';
@@ -17,117 +17,141 @@ import { AuthService } from '../../services/auth/_services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule, // Essentiel pour la navigation (RouterLink, RouterOutlet)
+    RouterModule,
     TranslateModule
   ]
 })
-export class MainComponent {
+export class MainComponent implements OnInit, AfterViewInit {
+  
   notifications: any[] = [];
-
-
+  permissions: string[] = [];
+  
+  // États UI
   waiter = false;
   loading = false;
-  activated = false;
   showLogout = false;
   activeItem: string | null = '';
-  fparam: any;
   currentLang: string = 'fr';
-  constructor(private router: Router, public translate: TranslateService, private auth: AuthService,
-    private ts: SessionStorageService, private api: ApiService) {
+  
+  fparam: any;
+
+  constructor(
+    private router: Router, 
+    public translate: TranslateService, 
+    private auth: AuthService,
+    private ts: SessionStorageService, 
+    private api: ApiService
+  ) {
+    // Initialisation Langue
     const browserLang = this.translate.getBrowserLang() || 'fr';
     this.currentLang = browserLang;
     this.translate.setDefaultLang(browserLang);
     this.translate.use(browserLang);
+
+    // Initialisation Permissions & Params
     this.permissions = this.ts.getRoles();
-    this.fparam = new FindParam(this.ts.getOrganisation(), this.ts.getUser().login);
+    this.fparam = new FindParam(this.ts.getOrganisation(), this.ts.getUser()?.login);
   }
 
   ngOnInit() {
     this.getActiveItem();
-    if (!this.ts.getUser().login) {
-      this.utilisateurfetch();
+    // Si l'utilisateur est connecté mais qu'on n'a pas ses détails complets, on les recharge
+    if (this.ts.getUser()?.login) {
+      // Optionnel: On peut rafraichir les infos utilisateur ici si nécessaire
+      // this.utilisateurfetch(); 
+    } else {
+       // Si pas connecté, rediriger (optionnel selon guard)
     }
-    //this.getNotifications();
   }
 
   ngAfterViewInit() { }
-  //--------------------------------------------------------------------------------
+
+  // --- Gestion Navigation & UI ---
+
   changeLanguage(lang: string): void {
     this.currentLang = lang;
     this.translate.use(lang);
   }
-  //--------------------------------------------------------------------------------
 
-
-  // Gestion du clic sur une notification
-  handleNotificationClick(notification: any) {
-    if (notification.route) {
-      this.router.navigate([notification.route]); // Naviguer vers la route associée
-    } else {
-      console.log('Notification clicked:', notification);
-      // Effectuer une autre action si nécessaire
-    }
+  setActiveMenu(item: string) { 
+    this.activeItem = item; 
+    this.ts.saveActiveItem(item); 
   }
-  //--------------------------------------------------------------------------------
+
+  getActiveItem() { 
+    this.activeItem = this.ts.getActiveItem(); 
+  }
+
+  openCreateModal() {
+    console.log("Ouverture modale création...");
+    // Logique pour ouvrir une modale de création globale (Ticket, Projet, etc.)
+  }
+  
+  goHome() { 
+    this.setActiveMenu('home');
+    this.router.navigate(['/home']); 
+  }
+
+  // --- Authentification & Permissions ---
+
+  habilitation(code: string): boolean { 
+    // Vérification simplifiée des permissions
+    return this.permissions.includes(code); 
+  }
 
   utilisateurfetch() {
     this.loading = true;
+    if(!this.fparam.login) return; 
+
     this.auth.userDetails(this.fparam).subscribe({
-      next: (data: any) => { this.loading = false; this.actualiser(data); },
-      error: (error: any) => { console.error(error); this.loading = false; }
+      next: (data: any) => { 
+        this.loading = false; 
+        this.actualiser(data); 
+      },
+      error: (error: any) => { 
+        console.error(error); 
+        this.loading = false; 
+      }
     });
   }
 
   actualiser(data: any) {
     if (data && data.utilisateur) {
-
       this.waiter = true;
-      // Stocker les informations utilisateur et autres données
+      
       this.ts.saveRole(data.roles);
       this.ts.saveOrganisation(data.utilisateur.organisationID);
       this.ts.saveUser(data.utilisateur);
 
-      // Extraire tous les codes des roles
-      const roles = data.roles?.map((permission: Groupe) => permission.code).filter((code: string) => !!code) || [];
+      const roles = data.roles?.map((p: Groupe) => p.code).filter((c: string) => !!c) || [];
+      const codes = data.permissions?.map((p: Permission) => p.code).filter((c: string) => !!c) || [];
 
-      // Extraire tous les codes des permissions (avec un type explicite pour permission)
-      const codes = data.permissions?.map((permission: Permission) => permission.code).filter((code: string) => !!code) || [];
+      if (roles.length > 0) this.ts.saveRole(roles);
+      if (codes.length > 0) this.ts.savePermission(codes);
 
-      // Sauvegarder tous les codes en une seule fois
-      if (roles.length > 0) { this.ts.saveRole(roles); }
-      if (codes.length > 0) { this.ts.savePermission(codes); }
+      this.permissions = [...roles, ...codes]; // Mise à jour locale immédiate
 
-      setTimeout(() => {
-        this.waiter = false;
-
-      }, 1500);
-    } else {
-      console.warn('Données invalides ou utilisateur manquant:', data);
+      setTimeout(() => { this.waiter = false; }, 1000);
     }
   }
-  //--------------------------------------------------------------------------------
 
-  // Déconnexion
+  // --- Déconnexion ---
+
   confirmLogout() { this.showLogout = true; }
-
   closeLogout() { this.showLogout = false; }
 
-  logout() { this.showLogout = false; this.ts.signOut(); this.router.navigate(['/']); }
-  //--------------------------------------------------------------------------------
+  logout() { 
+    this.showLogout = false; 
+    this.ts.signOut(); 
+    this.router.navigate(['/']); 
+  }
 
-  goHome() { this.router.navigate(['/']); }
-
-  openMessages() { this.router.navigate(['/messages']); }
-  //--------------------------------------------------------------------------------
-
-  setActiveMenu(item: string) { this.activeItem = item; this.ts.saveActiveItem(item); }
-
-  getActiveItem() { this.activeItem = this.ts.getActiveItem(); }
-
-  //--------------------------------------------------------------------------------
-  permissions: string[] = []
-  habilitation(code: string): boolean { return this.permissions.includes(code); }
-
-  //--------------------------------------------------------------------------------
+  // --- Notifications ---
+  
+  handleNotificationClick(notification: any) {
+    if (notification.route) {
+      this.router.navigate([notification.route]);
+    }
+  }
 
 }

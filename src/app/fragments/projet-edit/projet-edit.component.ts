@@ -82,7 +82,8 @@ export class ProjetEditComponent implements OnInit {
 
   reload() { this.listPriorite(); }
   //------------------------------------------------------------------------------------------------------------------------------------
-  listPriorite() { this.displaySpinner = true; this.api.prioriteList().subscribe((data) => { this.priorites = data; this.displaySpinner = false; }); }
+  listPriorite() { this.displaySpinner = true; this.api.prioriteList().subscribe((data) => { this.priorites = data; console.log(data);
+   this.displaySpinner = false; }); }
   //------------------------------------------------------------------------------------------------------------------------------------
 
   saveProjet(form: NgForm) {

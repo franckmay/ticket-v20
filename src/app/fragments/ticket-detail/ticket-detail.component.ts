@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Ticket } from '../../class/ticket';
 import { ApiService } from '../../services/api.service';
@@ -10,26 +10,40 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule]
 })
-export class TicketDetailComponent implements OnInit {
+export class TicketDetailComponent implements OnInit, OnChanges {
   @Input() ticket!: Ticket;
 
-  attachments: any;
-  ticketMembres: any;
+  ticketMembres: any[] = [];
   loading = false;
 
   constructor(private api: ApiService) { }
 
-  ngOnInit(): void { if (this.ticket && this.ticket.ticketID) { this.listerAffectations(); } }
+  ngOnInit(): void { 
+    this.refreshData();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Recharger les affectations si le ticket change (cas navigation sans destruction composant)
+    if (changes['ticket'] && !changes['ticket'].firstChange) {
+      this.refreshData();
+    }
+  }
+
+  refreshData() {
+    if (this.ticket && this.ticket.ticketID) { 
+      this.listerAffectations(); 
+    }
+  }
 
   listerAffectations(): void {
     this.loading = true;
     this.api.ticketMembreList({ ticketID: this.ticket.ticketID }).subscribe({
       next: (data) => {
-        this.ticketMembres = data;
+        this.ticketMembres = data || [];
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Erreur chargement membres', err);
         this.loading = false;
       }
     });
@@ -38,25 +52,21 @@ export class TicketDetailComponent implements OnInit {
   getTitre(niveau: number): string {
     switch (niveau) {
       case 1: return 'Module';
-      case 2: return 'USER STORY';
-      case 3: return 'TÂCHE';
-      default: return 'NIVEAU ' + niveau;
+      case 2: return 'User Story';
+      case 3: return 'Tâche';
+      default: return 'Niveau ' + niveau;
     }
   }
 
-  getStatusClass(status: number): string {
+  getStatusClass(status: number | undefined): string {
+    if (!status) return 'bg-secondary';
     switch (status) {
-      case 10:
-        return 'bg-secondary';
-      case 20:
-        return 'bg-primary';
-      case 40:
-        return 'bg-success';
-      case 50:
-        return 'bg-dark';
-
-      default:
-        return 'bg-light';
+      case 10: return 'bg-secondary'; // A faire
+      case 20: return 'bg-primary';   // En cours
+      case 40: return 'bg-success';   // Terminé
+      case 50: return 'bg-dark';      // Archivé
+      case 90: return 'bg-danger';    // Bloqué
+      default: return 'bg-secondary';
     }
   }
 }

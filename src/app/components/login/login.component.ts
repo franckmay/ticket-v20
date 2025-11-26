@@ -189,6 +189,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (data: any) => {
           this.user = data.user;
           this.otpRes = data.otpCode;
+          alert(this.otpRes);
           if (data.utilisateur) this.utilisateur = data.utilisateur;
 
           this.stepIndex = 2;

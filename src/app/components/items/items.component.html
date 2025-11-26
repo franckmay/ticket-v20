@@ -1,288 +1,253 @@
-<div class="container-fluid">
-  <ng-container *ngIf="showInterface == 1">
-    <div class="row d-flex justify-content-between">
-      <div class="card mb-4 px-2">
-        <div class="filter-card p-3">
-          <form (ngSubmit)="listProjet()">
-            <div class="filters-wrapper">
-              <select class="form-select filter-dropdown" [(ngModel)]="fparam.organisationID" name="organisationID">
-                <option value="" selected>
-                  {{ 'all_organisation' | translate }}
-                </option>
-                <option *ngFor="let org of organisations" [ngValue]="org.organisationID">
-                  {{ org.libelleFr }}
-                </option>
-              </select>
+<div class="container-fluid fade-in-up">
 
-              <!-- Status Filter -->
-              <select class="form-select filter-dropdown" [(ngModel)]="fparam.priorite" name="priorite">
-                <option value="undefined" selected>
-                  {{ 'priorite' | translate }}
-                </option>
-                <option *ngFor="let s of priorites" [ngValue]="s.niveau">
-                  {{ s.libelleFr }}
-                </option>
-              </select>
-
-              <!-- Start Date -->
-              <input type="date" class="form-control filter-dropdown" [(ngModel)]="fparam.dateDebut"
-                placeholder="{{ 'Start Date' | translate }}" name="dateDebut">
-
-              <!-- End Date -->
-              <input type="date" class="form-control filter-dropdown" [(ngModel)]="fparam.dateFin"
-                placeholder="{{ 'End Date' | translate }}" name="dateFin">
-
-              <!-- Search Button -->
-              <button type="submit" class="search-btn">
-                <i class="pi pi-search"></i>
-              </button>
-            </div>
-          </form>
-        </div>
+  <!-- ================= VUE 1 : LISTE PRINCIPALE ================= -->
+  @if (showInterface == 1) {
+    
+    <!-- Header Filter Bar -->
+    <div class="header-card">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-layer-group text-primary fs-5"></i>
+        <h5 class="mb-0 fw-bold">Backlog & Fonctionnalités</h5>
       </div>
+
+      <form (ngSubmit)="listProjet()" class="filters-wrapper">
+        <select class="form-select" [(ngModel)]="fparam.organisationID" name="organisationID">
+          <option value="" selected>{{ 'all_organisation' | translate }}</option>
+          @for (org of organisations; track org.organisationID) {
+            <option [ngValue]="org.organisationID">{{ org.libelleFr }}</option>
+          }
+        </select>
+
+        <select class="form-select" [(ngModel)]="fparam.priorite" name="priorite">
+          <option value="undefined" selected>{{ 'priorite' | translate }}</option>
+          @for (s of priorites; track s.niveau) {
+            <option [ngValue]="s.niveau">{{ s.libelleFr }}</option>
+          }
+        </select>
+
+        <input type="date" class="form-control" [(ngModel)]="fparam.dateDebut" name="dateDebut">
+        <input type="date" class="form-control" [(ngModel)]="fparam.dateFin" name="dateFin">
+
+        <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+      </form>
     </div>
-    <div class="row">
-      <!-- ======= Colonne latérale (statuts & filtres) ======= -->
-      <div class="col-lg-3 col-md-4 bg-light">
-        <!-- Filtre par projet -->
-        <div class="card shadow-sm">
-          <div class="card-header">
-            <i class="fa fa-folder-open"></i>
-            {{ 'Projets' | translate }}
+
+    <div class="row g-4">
+      
+      <!-- SIDEBAR PROJETS -->
+      <div class="col-lg-3 col-md-4">
+        <div class="sidebar-card">
+          <div class="sidebar-header">
+            <i class="fas fa-folder text-secondary"></i> {{ 'Projets' | translate }}
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item" *ngFor="let p of projets"
-              [class.active]="p.projetID === projetSelectionne?.projetID" (click)="selectProject(p)"
-              [ngClass]="{ 'selected-projet': p.projetID === projetSelectionne?.projetID }">
-              <i class="fa fa-circle me-2" [ngStyle]="{'font-size':'0.6em', 'cursor': 'pointer'}"></i>
-              {{ p.libelleFr }}
-              <span class="badge bg-secondary float-end">{{ p.count }}</span>
-            </li>
+          <ul class="project-list custom-scrollbar">
+            @for (p of projets; track p.projetID) {
+              <li [class.active]="p.projetID === projetSelectionne?.projetID" (click)="selectProject(p)">
+                <span class="d-flex align-items-center gap-2 text-truncate">
+                  <i class="fas fa-circle" style="font-size: 6px;"></i> {{ p.libelleFr }}
+                </span>
+                <span class="count-badge" [class.active-badge]="p.projetID === projetSelectionne?.projetID">
+                  {{ p.count || 0 }}
+                </span>
+              </li>
+            }
           </ul>
         </div>
       </div>
-      <!-- ======= Colonne principale (table + actions) ======= -->
-      <div class="col-lg-9 col-md-8 mb-4 px-2 shadow">
-        <div class="d-flex align-items-center mb-3">
-          <button class="btn btn-outline-dark" (click)="loadAll()">
-            <i class="fa fa-rotate-right" tooltip="actualiser"></i>
-          </button>
 
-          <button class="btn btn-outline-secondary mx-1">
-            <i class="fa fa-filter" tooltip="Filtres avancés"></i>
-          </button>
+      <!-- MAIN TABLE -->
+      <div class="col-lg-9 col-md-8">
+        <div class="content-card">
+          <div class="action-bar">
+            <div class="d-flex gap-2">
+              <button class="btn-outline" (click)="loadAll()">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <h6 class="mb-0 align-self-center ms-2 fw-bold text-muted" *ngIf="projetSelectionne">
+                {{ projetSelectionne.libelleFr }}
+              </h6>
+            </div>
+            <button class="btn-primary-action" (click)="editTicket(2)">
+              <i class="fas fa-plus"></i> {{ 'Nouvelle' | translate }}
+            </button>
+          </div>
 
-          <button class="btn btn-success" (click)="editTicket(2)">
-            <i class="fa fa-plus" tooltip="Nouvelle"></i>
-          </button>
+          <div class="table-responsive">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Désignation</th>
+                  <th>Dates</th>
+                  <th class="text-center">Statut</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (f of fonctionnalites; track f.ticketID) {
+                  <tr>
+                    <td class="text-muted small fw-mono">{{ f.code }}</td>
+                    <td class="fw-medium">{{ f.libelleFr }}</td>
+                    <td>
+                      <div class="small text-muted">
+                        @if (f.dateDebut) { {{ f.dateDebut | date:'dd/MM' }} }
+                        @if (f.dateFin) { <i class="fas fa-arrow-right mx-1 small"></i> {{ f.dateFin | date:'dd/MM' }} }
+                      </div>
+                    </td>
+                    <td class="text-center">
+                       <span class="status-badge" [ngClass]="'status-' + f.status">{{ f.statusLibelle || f.status }}</span>
+                    </td>
+                    <td>
+                      <div class="action-buttons justify-content-end">
+                        <button class="btn-icon" (click)="editTicket(f.niveau, f)" title="Modifier">
+                          <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-icon text-primary" (click)="tacheListByUS(f)" title="Voir Tâches">
+                          <i class="fas fa-list-ul"></i>
+                        </button>
+                        <button class="btn-icon delete" (click)="confirmDelete(f.ticketID)" title="Supprimer">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+                @if (fonctionnalites.length === 0) {
+                  <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                      <i class="fas fa-inbox fa-2x mb-3 opacity-25"></i>
+                      <p>Aucune fonctionnalité trouvée pour ce projet.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
-
-        <!-- Tableau des fonctionnalités -->
-        <div class="table-responsive bg-white rounded shadow-sm">
-          <table class="table table-hover mb-0">
-            <thead class="table-light">
-              <tr>
-                <th style="width: 10%;">code</th>
-                <th style="width: 20%;">Projet</th>
-                <th style="width: 30%;">Designation</th>
-                <th style="width: 13%;">Date début</th>
-                <th style="width: 13%;">Date fin</th>
-                <th style="width: 14%;">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let f of fonctionnalites">
-
-                <td>{{ f.code }}</td>
-                <td>{{ f.projetLibelle }}</td>
-                <td>{{ f.libelleFr }}</td>
-                <td>{{ f.dateDebut | date:'dd MMM yyyy' }}</td>
-                <td>{{ f.dateFin | date:'dd MMM yyyy' }}</td>
-                <!--
-                  <td>
-                    <span class="badge" [ngClass]="{
-                        'bg-success': f.status==50,
-                        'bg-warning': f.status==20,
-                        'bg-secondary': f.status==10
-                      }">
-                      {{ f.status}}
-                    </span>
-                  </td> -->
-                <td>
-                  <button class="btn btn-sm btn-outline-secondary" (click)="editTicket(f.niveau, f)">
-                    <i class="fa fa-edit"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-primary mx-1" (click)="tacheListByUS(f)">
-                    <i class="fas fa-list"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(f.ticketID)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
       </div>
-
     </div>
-  </ng-container>
-  <!-- ------------------------------------------------------------------------------------------------ -->
+  }
 
-  <!-- details: taches d une fonctionnalité-->
-  <ng-container *ngIf="showInterface === 2">
-    <div class="container-fluid px-3 px-md-5 py-4 bg-light">
-      <!-- Back + Titre modernisés -->
-      <div class="d-flex align-items-center mb-4">
-        <button class="btn btn-light btn-lg me-3 shadow-sm" (click)="retour(2)">
-          <i class="fa fa-arrow-left"></i>
-        </button>
-        <h1 class="h3 fw-bold mb-0 text-dark d-flex align-items-center">
-          <i class="fas fa-tasks text-primary me-2"></i>
-          {{ 'Tâches du répertoire' | translate }}
-          <small class="text-primary ms-2">{{ ticketParent.libelleFr }}</small>
-        </h1>
-        <div class="ms-auto d-flex gap-2">
-          <button class="btn btn-outline-secondary" (click)="loadAll()">
-            <i class="fa fa-rotate-right"></i> {{ 'Actualiser' | translate }}
+  <!-- ================= VUE 2 : LISTE TÂCHES (DETAIL US) ================= -->
+  @if (showInterface === 2) {
+    <div class="bg-white rounded-4 shadow-sm p-4">
+      <!-- Header avec bouton retour -->
+      <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-light shadow-sm border rounded-circle" style="width:40px;height:40px;" (click)="retour(2)">
+            <i class="fas fa-arrow-left"></i>
           </button>
-          <button class="btn btn-primary" (click)="editTicket(3)">
-            <i class="fa fa-plus"></i> {{ 'Nouvelle' | translate }}
+          <div>
+            <h4 class="mb-0 fw-bold">{{ ticketParent.libelleFr }}</h4>
+            <small class="text-muted">Liste des tâches associées</small>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" (click)="loadAll()">
+            <i class="fas fa-sync-alt me-2"></i> Actualiser
+          </button>
+          <button class="btn btn-dark btn-sm" (click)="editTicket(3)">
+            <i class="fas fa-plus me-2"></i> Nouvelle Tâche
           </button>
         </div>
       </div>
 
-      <!-- Tableau responsive avec gridlines -->
-      <div class="table-responsive shadow-sm rounded bg-white">
-        <table class="table table-bordered table-hover align-middle mb-0">
-          <thead class="table-light">
+      <!-- Table Tâches -->
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
             <tr>
-              <th class="w-45">{{ 'Désignation' | translate }}</th>
-              <th class="w-10 text-center">{{ 'Status' | translate }}</th>
-              <th class="w-10 text-center">{{ 'Priorité' | translate }}</th>
-              <th class="w-10 text-center">{{ 'Date début' | translate }}</th>
-              <th class="w-10 text-center">{{ 'Date fin' | translate }}</th>
-              <th class="w-15 text-center">{{ 'Actions' | translate }}</th>
+              <th>Désignation</th>
+              <th class="text-center">Statut</th>
+              <th class="text-center">Priorité</th>
+              <th>Échéance</th>
+              <th class="text-end">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let f of tachesUS" class="table-row">
-              <td class="fw-semibold">{{ f.libelleFr }}</td>
-              <td class="text-center">
-                <span class="badge" [ngClass]="{
-                    'bg-secondary': f.status === 10,
-                    'bg-primary': f.status === 20,
-                    'bg-info':    f.status === 30,
-                    'bg-success': f.status === 40,
-                    'bg-dark':    f.status === 50
-                  }">
-                  {{ f.statusLibelle }}
-                </span>
-              </td>
-              <td class="text-center">
-                <span class="badge" [ngClass]="{
-                    'bg-secondary': f.priorite < 4,
-                    'bg-warning':   f.priorite >= 4 && f.priorite <= 5,
-                    'bg-danger':    f.priorite > 5
-                  }">
-                  {{ f.prioriteLibelle }}
-                </span>
-              </td>
-              <td class="text-center">{{ f.dateDebut | date: 'dd MMM yyyy' }}</td>
-              <td class="text-center">{{ f.dateFin | date: 'dd MMM yyyy' }}</td>
-              <td class="text-center">
-                <div class="btn-group btn-group-sm" role="group">
-                  <button class="btn btn-outline-primary" (click)="editTicket(f.niveau, f)">
-                    <i class="fa fa-edit"></i>
-                  </button>
-                  <button class="btn btn-outline-danger" (click)="confirmDelete(f.ticketID)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                  <button class="btn btn-outline-success" (click)="openAffectation(f)">
-                    <i class="fas fa-user-friends"></i>
-                  </button>
-
-                </div>
-              </td>
-            </tr>
+            @for (t of tachesUS; track t.ticketID) {
+              <tr>
+                <td class="fw-medium">{{ t.libelleFr }}</td>
+                <td class="text-center">
+                   <span class="status-badge" [ngClass]="'status-' + t.status">{{ t.statusLibelle }}</span>
+                </td>
+                <td class="text-center">
+                  <span class="priority-badge" [ngClass]="{'high': t.priorite! > 5, 'med': t.priorite! > 3 && t.priorite! <=5, 'low': t.priorite! <=3}">
+                    {{ t.prioriteLibelle }}
+                  </span>
+                </td>
+                <td>{{ t.dateFin | date:'dd MMM yyyy' }}</td>
+                <td>
+                  <div class="action-buttons justify-content-end">
+                    <button class="btn-icon" (click)="editTicket(t.niveau, t)" title="Modifier">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="btn-icon" (click)="openAffectation(t)" title="Affecter Membres">
+                      <i class="fas fa-users"></i>
+                    </button>
+                    <button class="btn-icon delete" (click)="confirmDelete(t.ticketID)" title="Supprimer">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>
     </div>
-  </ng-container>
+  }
 
-  <!-- ------------------------------------------------------------------------------------------------ -->
-
-  <!-- formulaire denregistrement -->
-  <ng-container *ngIf="showInterface == 3">
-    <div class="container">
+  <!-- ================= VUE 3 : FORMULAIRE EDITION ================= -->
+  @if (showInterface == 3) {
+    <div class="container py-4">
       <app-ticket-edit [ticket]="ticket" [projets]="projets" (save)="closeForm($event)" (cancel)="closeForm()">
       </app-ticket-edit>
     </div>
-  </ng-container>
-</div>
-<!-- ------------------------------------------------------------------------------------------------ -->
+  }
 
-<!-- affectations ------------------------------------------------ -->
-<ng-container *ngIf="showInterface == 4">
-  <app-ticket-membre-list [ticket]="ticket" (cancel)="closeAffectation()">
-  </app-ticket-membre-list>
-</ng-container>
-<!-- ------------------------------------------------------------------------------------------------ -->
-
-
-<!-- Loader Overlay -->
-<div *ngIf="loading" class="loader-overlay d-flex align-items-center justify-content-center">
-  <div class="text-center">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+  <!-- ================= VUE 4 : AFFECTATIONS ================= -->
+  @if (showInterface == 4) {
+    <div class="container py-4">
+       <!-- On wrap dans une card pour la consistance -->
+       <div class="bg-white rounded-4 shadow-sm p-4">
+          <div class="d-flex align-items-center mb-4">
+              <button class="btn btn-light btn-sm me-3" (click)="closeAffectation()"><i class="fas fa-arrow-left"></i></button>
+              <h5 class="mb-0">Gérer l'équipe</h5>
+          </div>
+          <app-ticket-membre-list [ticket]="ticket" (cancel)="closeAffectation()"></app-ticket-membre-list>
+       </div>
     </div>
-    <p class="mt-3 text-white">{{ 'loading' | translate }}</p>
-  </div>
-</div>
+  }
 
-<!-- ------------------------------------------------------------------------------------------------ -->
-<p-dialog [(visible)]="deleteDialog" [modal]="true" [style]="{width: '600px'}" [draggable]="true" [resizable]="false">
-  <ng-template pTemplate="header">
-    <span style="font-size: 22px; color: #dc3545;">{{ 'Confirmation de suppression de ticket' | translate }}</span>
-  </ng-template>
-  <div class="modal-body">
-    <div class="row">
-      <div class="col-md-12">
-        <h4 class="text-center mb-3 text-danger">
-          {{ "Êtes-vous sûre de vouloir supprimer ce ticket et toutes ses dépendances ?" | translate }}
-        </h4>
-        <div class="alert alert-danger">
-          <p><strong>{{ "Cette opération entraînera :" | translate }}</strong></p>
-          <ul class="mb-3 pl-3">
-            <li>{{ "Supprime définitivement le ticket sélectionné" | translate }}</li>
-            <li>{{ "Supprime récursivement tous les tickets enfants" | translate }}</li>
-            <li>{{ "Efface les commentaires, pièces-jointes et liens entre tickets" | translate }}</li>
-            <li>{{ "Supprime les affectations de membres et rattachements aux sprints" | translate }}</li>
-          </ul>
-          <p class="mb-0">
-            <strong>
-              {{ "Action irréversible - données définitivement perdues" | translate }}
-            </strong>
-          </p>
-        </div>
-        <p class="text-center">{{ "Voulez-vous vraiment continuer ?" | translate }}</p>
+  <!-- DIALOGUE SUPPRESSION (CONTAINER) -->
+  <p-dialog [(visible)]="deleteDialog" [modal]="true" [style]="{width: '450px'}" [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+      <div class="text-danger d-flex align-items-center gap-2">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span class="fw-bold">Confirmation requise</span>
       </div>
+    </ng-template>
+    
+    <div class="p-3 text-center">
+      <p class="mb-2 fw-medium">Voulez-vous vraiment supprimer cet élément ?</p>
+      <p class="text-muted small">Cette action est irréversible et supprimera toutes les données associées (tâches enfants, commentaires, etc.).</p>
     </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <div class="row justify-content-center">
-      <button class="btn btn-secondary btn-sm mx-2" (click)="deleteDialog = false">
-        <i class="fa fa-times-circle"></i>&nbsp;{{ "Annuler" | translate }}
+
+    <ng-template pTemplate="footer">
+      <button class="btn btn-light btn-sm" (click)="deleteDialog = false">Annuler</button>
+      <button class="btn btn-danger btn-sm" (click)="deleteTicket()" [disabled]="loading">
+        @if(loading) { <span class="spinner-border spinner-border-sm"></span> }
+        @else { Confirmer }
       </button>
-      <button *ngIf="!loading" class="btn btn-danger btn-sm mx-2" (click)="deleteTicket()">
-        <i class="fas fa-trash"></i>&nbsp;{{ "supprimer" | translate }}
-      </button>
-      <button class="btn btn-danger " type="button" disabled *ngIf="loading">
-        <span class="spinner-grow spinner-grow-sm"></span>
-        {{ 'En cours...' | translate }}
-      </button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- LOADER -->
+  @if (loading) {
+    <div class="loader-overlay">
+      <div class="spinner-border text-primary" role="status"></div>
     </div>
-  </ng-template>
-</p-dialog>
+  }
+
+</div>

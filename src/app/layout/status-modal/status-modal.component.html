@@ -1,0 +1,31 @@
+<div *ngIf="showModal" class="modal-overlay">
+  <!-- Le contenu de la modale utilise ngClass pour une gestion dynamique et propre des styles -->
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div class="modal-body">
+      <!-- Conteneur de l'icône avec classes et animations conditionnelles -->
+      <div class="icon-container" [ngClass]="'icon-' + type">
+        <!-- L'icône change en fonction du type -->
+        <i class="fas " [ngClass]="{
+          'fa-check': type == 'success',
+          'fa-times': type == 'error',
+          'fa-info': type == 'info',
+          'fa-exclamation-triangle': type == 'warning',
+          'fa-spinner fa-spin': type == 'loading'
+        }"></i>
+      </div>
+
+      <!-- Titre et message bindés depuis les inputs -->
+      <h2 class="modal-title">{{ title }}</h2>
+      <p class="modal-message">{{ message }}</p>
+    </div>
+
+    <!-- Le bouton OK n'est pas affiché pendant le chargement -->
+    <div class="modal-footer" *ngIf="type !== 'loading'">
+      <button type="button" class="btn btn-primary" (click)="close()">
+        OK
+      </button>
+    </div>
+
+  </div>
+</div>

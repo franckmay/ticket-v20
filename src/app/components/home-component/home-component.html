@@ -1,0 +1,244 @@
+<div class="dashboard-container fade-in">
+    
+    <!-- HEADER & STATS -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold m-0 text-dark">Tableau de bord</h4>
+            <small class="text-muted">Vue d'ensemble de vos activités</small>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            @if (loading()) {
+                <p-skeleton width="150px" height="32px" borderRadius="16px"></p-skeleton>
+            } @else {
+                <div class="stat-pill" pTooltip="Poids total de vos tâches assignées">
+                    <i class="fas fa-weight-hanging text-muted"></i> 
+                    <strong>{{ totalLoad() }}</strong> pts charge
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- HERO: RESUME & SCROLLER PROJETS -->
+    <div class="hero-banner">
+        <div class="row align-items-center">
+            <!-- Stats Rapides -->
+            <div class="col-lg-4 mb-4 mb-lg-0 border-end border-light">
+                <div class="text-muted text-uppercase small fw-bold mb-1">Bonjour, {{ currentUser()?.prenom }}</div>
+                <h1 class="mb-3">
+                    <span class="text-highlight">{{ tasksDoneCount() }} tâches</span><br>
+                    terminées cette semaine
+                </h1>
+                <button pButton label="Nouveau Projet" icon="pi pi-plus" class="p-button-outlined p-button-sm rounded-pill" (click)="openProjetEdit()"></button>
+            </div>
+            
+            <!-- SCROLLER PROJETS (Correction: Troncature Noms) -->
+            <div class="col-lg-8 ps-lg-4">
+                <div class="d-flex align-items-center mb-2 justify-content-between">
+                    <h6 class="fw-bold text-muted small m-0">MES PROJETS ACTIFS</h6>
+                    <span class="badge bg-light text-dark">{{ projects().length }}</span>
+                </div>
+                
+                <div class="d-flex overflow-auto gap-3 pb-2" style="scrollbar-width: thin;">
+                    @for (p of projects(); track p.projetID; let i = $index) {
+                        <!-- Carte Projet -->
+                        <div class="course-card" [ngClass]="{'theme-blue': i === 0}" 
+                             pTooltip="{{ p.libelleFr }}" tooltipPosition="top">
+                            
+                            <!-- Header Carte -->
+                            <div class="card-head">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="text-uppercase small opacity-75 fw-bold">{{ p.code }}</div>
+                                    <!-- Menu Contextuel Projet -->
+                                    <div class="dropdown" (click)="$event.stopPropagation()">
+                                        <button class="btn btn-sm btn-link text-white p-0" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu shadow border-0">
+                                            <li><a class="dropdown-item small" (click)="openSprints(p)"><i class="fas fa-list me-2"></i>Sprints</a></li>
+                                            <li><a class="dropdown-item small" (click)="openEquipes(p)"><i class="fas fa-users me-2"></i>Équipes</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item small" (click)="openProjetEdit(p)"><i class="fas fa-edit me-2"></i>Modifier</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Titre Tronqué -->
+                                <h3 class="text-truncate" style="max-width: 180px;">{{ p.libelleFr }}</h3>
+                            </div>
+
+                            <!-- Footer Carte (Progression) -->
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between small opacity-75 mb-1">
+                                    <span>Avancement</span>
+                                    <span>{{ p.tauxExecution || 0 }}%</span>
+                                </div>
+                                <div class="progress" style="height: 4px; background: rgba(255,255,255,0.3);">
+                                    <div class="progress-bar bg-white" [style.width.%]="p.tauxExecution || 0"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (projects().length === 0) {
+                        <div class="text-muted small fst-italic p-3 border rounded border-dashed w-100 text-center">
+                            Aucun projet assigné.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="row g-4 mt-2">
+        
+        <!-- GAUCHE: TÂCHES (Niveau 3) -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0 text-dark">Mes Tâches ({{ myTasks().length }})</h5>
+            </div>
+
+            <div class="bg-white rounded border shadow-sm overflow-hidden">
+                <!-- Skeleton Loading -->
+                @if (loading()) {
+                   <div class="p-3">
+                       <p-skeleton height="60px" styleClass="mb-2"></p-skeleton>
+                       <p-skeleton height="60px" styleClass="mb-2"></p-skeleton>
+                   </div>
+                } @else {
+                    <!-- Liste Tâches -->
+                    @for (task of myTasks() | slice:0:10; track task.ticketID) {
+                        <div class="module-row ticket-card" [ngClass]="getStatusClass(task)" (click)="openTicketDetails(task)">
+                            
+                            <!-- Priorité -->
+                            <div class="me-3" pTooltip="Priorité: {{ getPriorityLabel(task.priorite) }}">
+                                <span class="priority-badge" [ngClass]="'prio-' + task.priorite">
+                                    {{ task.priorite }}
+                                </span>
+                            </div>
+
+                            <!-- Info -->
+                            <div class="ticket-meta">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small font-monospace">{{ task.code }}</span>
+                                    <span class="ticket-title" pTooltip="{{ task.libelleFr }}">{{ task.libelleFr }}</span>
+                                </div>
+                                <!-- Fil d'Ariane -->
+                                <div class="ticket-path">
+                                    <i class="fas fa-folder-open"></i> {{ task.projetLibelle }} 
+                                    <span *ngIf="task.codeParent"> > <i class="fas fa-cube"></i> {{ task.codeParent }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="d-flex align-items-center gap-3 ms-3">
+                                <div class="text-end d-none d-sm-block" style="min-width: 70px;">
+                                    <div class="small fw-bold">{{ task.tauxExecution }}%</div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar-fill" [style.width.%]="task.tauxExecution"></div>
+                                    </div>
+                                </div>
+                                <!-- Badge Statut -->
+                                <div class="status-badge d-none d-md-block">
+                                    {{ task.statusLibelle || 'En cours' }}
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (myTasks().length === 0) {
+                        <div class="p-5 text-center text-muted">
+                            <i class="fas fa-check-circle fa-2x mb-3 text-success opacity-25"></i>
+                            <p class="m-0">Tout est à jour ! Aucune tâche en attente.</p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- DROITE: MODULES & US (Niveau 1 & 2) -->
+        <div class="col-xl-4 col-lg-5">
+            
+            <!-- 1. MODULES ACTIFS (Niveau 1) -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-bold m-0 text-dark">Modules Actifs</h5>
+                    <span class="badge bg-light text-dark">{{ myModules().length }}</span>
+                </div>
+                
+                <div class="list-group shadow-sm border-0">
+                    @for (mod of myModules() | slice:0:3; track mod.ticketID) {
+                        <div class="list-group-item d-flex justify-content-between align-items-center list-group-item-action" 
+                             (click)="openTicketDetails(mod)">
+                            <div class="overflow-hidden">
+                                <h6 class="mb-0 fw-bold text-truncate text-dark" title="{{ mod.libelleFr }}">{{ mod.libelleFr }}</h6>
+                                <small class="text-muted d-block">
+                                    Fin: {{ mod.dateFin | date:'dd MMM' }} • {{ mod.poids }} pts
+                                </small>
+                            </div>
+                            <span class="badge bg-light text-dark border">{{ mod.tauxExecution }}%</span>
+                        </div>
+                    }
+                    @if (myModules().length === 0) {
+                        <div class="list-group-item text-muted small fst-italic">Aucun module actif.</div>
+                    }
+                </div>
+            </div>
+
+            <!-- 2. USER STORIES (Niveau 2) -->
+            <div class="mb-4">
+                 <h5 class="fw-bold mb-2 text-dark">User Stories (En cours)</h5>
+                 <div class="bg-white rounded border shadow-sm p-2">
+                    @for (us of myUserStories() | slice:0:4; track us.ticketID) {
+                        <div class="d-flex align-items-center p-2 border-bottom last-no-border" (click)="openTicketDetails(us)" style="cursor:pointer;">
+                             <div class="me-2 text-primary"><i class="fas fa-bookmark"></i></div>
+                             <div class="flex-grow-1 overflow-hidden">
+                                 <div class="text-truncate small fw-bold text-dark">{{ us.libelleFr }}</div>
+                                 <div class="text-muted" style="font-size: 0.75rem;">{{ us.code }}</div>
+                             </div>
+                             <div class="small fw-bold">{{ us.tauxExecution }}%</div>
+                        </div>
+                    }
+                 </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- MODALES (Dialogs) - Copiées et adaptées de AccueilComponent -->
+<!-- ====================================================================== -->
+
+<!-- 1. Détail Ticket -->
+<p-dialog [(visible)]="displayTicketDialog" [modal]="true" [style]="{width: '70vw'}" [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">Détails du Ticket</ng-template>
+    <div *ngIf="selectedTicket">
+        <app-ticket-detail [ticket]="selectedTicket"></app-ticket-detail>
+    </div>
+</p-dialog>
+
+<!-- 2. Edition/Création Projet -->
+<p-dialog [(visible)]="displayProjetDialog" [modal]="true" [style]="{width: '60vw'}" [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">{{ newProject.projetID ? 'Modifier Projet' : 'Nouveau Projet' }}</ng-template>
+    <app-projet-edit 
+        [projet]="newProject" 
+        [action]="newProject.projetID ? 'edit' : 'new'" 
+        (saveProjetEvent)="closeProjetDialog($event)"
+        (backEvent)="closeProjetDialog()">
+    </app-projet-edit>
+</p-dialog>
+
+<!-- 3. Sprints -->
+<p-dialog [(visible)]="displaySprintDialog" [modal]="true" [style]="{width: '80vw', height: '80vh'}" [draggable]="false">
+    <ng-template pTemplate="header">Gestion des Sprints</ng-template>
+    <div *ngIf="selectedProjet">
+        <app-sprint [projet]="selectedProjet" (cancel)="displaySprintDialog = false"></app-sprint>
+    </div>
+</p-dialog>
+
+<!-- 4. Equipes -->
+<p-dialog [(visible)]="displayEquipeDialog" [modal]="true" [style]="{width: '70vw'}" [draggable]="false">
+    <ng-template pTemplate="header">Équipes du Projet</ng-template>
+    <div *ngIf="selectedProjet">
+        <app-projet-equipe-edit [projet]="selectedProjet" (cancel)="displayEquipeDialog = false"></app-projet-equipe-edit>
+    </div>
+</p-dialog>

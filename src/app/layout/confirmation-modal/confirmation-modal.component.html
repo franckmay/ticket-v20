@@ -1,0 +1,31 @@
+<!-- confirmation-modal.component.html -->
+
+
+<div *ngIf="showModal && modalData" class="modal-overlay" (click)="cancel()">
+  <!-- Contenu de la modale avec animation d'apparition et arrêt de la propagation du clic -->
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <!-- Corps de la modale -->
+    <div class="modal-body">
+      <div class="icon-container">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+
+      <h2 class="modal-title">{{ modalData.title }}</h2>
+      <p class="modal-message">{{ modalData.message }}</p>
+    </div>
+
+    <!-- Pied de page avec les boutons d'action -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        {{ modalData.cancelText || 'Annuler' }}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="confirm()">
+        <!-- L'icône peut être personnalisée via modalData -->
+        <i [class]="modalData.confirmIcon || 'fas fa-check'"></i>
+        <span>{{ modalData.confirmText || 'Confirmer' }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,164 @@
+// --- VARIABLES GLOBALES ---
+$bg-body: #f4f5f7;
+$text-dark: #172b4d;
+$text-muted: #6b778c;
+$border-color: #dfe1e6;
+$primary-blue: #0052cc;
+
+// --- Host & Layout ---
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: $bg-body;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.dashboard-container {
+    padding: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+// --- Utils ---
+.text-highlight { color: $primary-blue; }
+.last-no-border:last-child { border-bottom: none !important; }
+
+// --- Header Stats ---
+.stat-pill {
+    background-color: white;
+    color: $text-dark;
+    border: 1px solid $border-color;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+// --- Hero Banner ---
+.hero-banner {
+    background: white;
+    border-radius: 8px;
+    padding: 24px 32px;
+    margin: 20px 0 24px 0;
+    border: 1px solid $border-color;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+
+    h1 {
+        font-weight: 700;
+        font-size: 1.6rem;
+        color: $text-dark;
+        line-height: 1.3;
+    }
+}
+
+// --- Projet Cards (Scroller) ---
+.course-card {
+    min-width: 240px;
+    height: 150px;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid $border-color;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    
+    &:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 4px 12px rgba(9, 30, 66, 0.15); 
+    }
+    
+    // Thème Bleu (Premier item)
+    &.theme-blue { 
+        background-color: $primary-blue; 
+        color: white; 
+        border: none;
+        
+        .progress { background: rgba(255,255,255,0.2); }
+        h3 { color: white; }
+        .text-uppercase { color: rgba(255,255,255,0.8) !important; }
+        .btn-link { color: white !important; }
+    }
+    
+    h3 { 
+        font-size: 1rem; 
+        font-weight: 600; 
+        color: $text-dark;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+}
+
+// --- Ticket Cards (Liste Tâches) ---
+.ticket-card {
+    border-left: 4px solid transparent; // Indicateur de couleur
+    transition: background-color 0.1s;
+    
+    // Palette 5 couleurs
+    &.status-gray   { border-left-color: #6c757d; .status-badge { background-color: #e9ecef; color: #495057; } }
+    &.status-blue   { border-left-color: #0d6efd; .status-badge { background-color: #cfe2ff; color: #084298; } }
+    &.status-green  { border-left-color: #198754; .status-badge { background-color: #d1e7dd; color: #0f5132; } }
+    &.status-purple { border-left-color: #6f42c1; .status-badge { background-color: #e0cffc; color: #432874; } }
+    &.status-brown  { border-left-color: #795548; .status-badge { background-color: #efebe9; color: #4e342e; } }
+}
+
+.module-row {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-bottom: 1px solid $border-color;
+    cursor: pointer;
+    
+    &:hover { background-color: #fafbfc; }
+    &:last-child { border-bottom: none; }
+}
+
+.ticket-meta {
+    margin-left: 12px;
+    flex-grow: 1;
+    overflow: hidden;
+    
+    .ticket-title { font-weight: 500; color: $text-dark; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ticket-path { font-size: 0.75rem; color: $text-muted; display: flex; align-items: center; gap: 4px; margin-top: 2px;}
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.priority-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    width: 20px; 
+    height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+
+    &.prio-3 { background-color: #de350b; } // Haute
+    &.prio-2 { background-color: #ff8b00; } // Moyenne
+    &.prio-1 { background-color: #006644; } // Basse
+    &.prio-0 { background-color: #42526e; } // None
+}
+
+.progress-container {
+    height: 6px;
+    background: #ebecf0;
+    border-radius: 3px;
+    width: 70px;
+    margin-top: 4px;
+    
+    .progress-bar-fill { height: 100%; background-color: $primary-blue; border-radius: 3px; }
+}

@@ -1,101 +1,203 @@
-<!-- Modale de confirmation -->
-<div *ngIf="showLogout" class="modal-overlay">
-    <div class="modal-content">
-        <h5 class="text-center">{{ 'deconnexion' | translate }}</h5>
-        <p>{{ 'confirmation_deconnexion' | translate }}</p>
-        <div class="d-flex justify-content-center mt-4">
-            <button class="btn btn-danger mx-2" (click)="logout()">{{ 'Oui' | translate }}</button>
-            <button class="btn btn-secondary mx-2" (click)="closeLogout()">{{ 'Non' | translate }}</button>
+<!-- Modale de confirmation (Style Bootstrap Standardisé) -->
+<div *ngIf="showLogout" class="modal-backdrop fade show"></div>
+<div *ngIf="showLogout" class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">{{ 'deconnexion' | translate }}</h5>
+                <button type="button" class="btn-close" (click)="closeLogout()"></button>
+            </div>
+            <div class="modal-body text-muted">
+                <p>{{ 'confirmation_deconnexion' | translate }}</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button class="btn btn-light fw-medium" (click)="closeLogout()">{{ 'Non' | translate }}</button>
+                <button class="btn btn-danger fw-medium" (click)="logout()">{{ 'Oui' | translate }}</button>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Loader Overlay -->
-<div *ngIf="waiter" class="loader-overlay d-flex align-items-center justify-content-center">
-    <div class="text-center">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-3 text-white">{{ 'loading' | translate }}</p>
+<div *ngIf="waiter || loading" class="loader-overlay d-flex flex-column align-items-center justify-content-center">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
     </div>
+    <p class="mt-3 text-white fw-bold">{{ 'loading' | translate }}...</p>
 </div>
 
-<!-- ---------------------- ---- ------------------------------- -->
+<!-- CONTAINER PRINCIPAL -->
+<div class="app-layout">
 
-<ng-container>
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-white border-bottom shadow-sm" style="height: 60px;">
+        <div class="container-fluid px-4">
+            
+            <!-- 1. Logo & Brand -->
+            <a class="navbar-brand d-flex align-items-center gap-2 me-4" (click)="goHome()" role="button">
+                <!-- Placeholder Logo : Remplacer par votre image -->
+                <div class="brand-icon">
+                    <i class="fab fa-jira fa-lg text-primary"></i>
+                </div>
+                <span class="fw-bold text-dark tracking-tight">Greco-Ticket</span>
+            </a>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-1">
-        <div class="container-fluid">
-            <!-- Bouton toggler -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Toggler Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Collapse avec justify-content-between -->
-            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-
-                <!-- Logo à gauche -->
-                <a class="navbar-brand" href="#">
-                    <img src="assets/images/greco.png" alt="Logo" style="width: 100px; height: 40px;"
-                        class="rounded-circle">
-                </a>
-
-                <!-- Icônes à droite -->
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    <!-- Administration -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" [ngClass]="{'active': activeItem === 'administration'}"
-                            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-cog"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" [ngClass]="{'active': activeItem === 'adminUser'}" [routerLink]="['adminUser']" (click)="setActiveMenu('adminUser')">{{ 'utilisateurs' | translate }}</a></li>
-                                <li><a class="dropdown-item" [ngClass]="{'active': activeItem === 'adminRole'}" [routerLink]="['adminRole']" (click)="setActiveMenu('adminRole')">{{ 'gestion des permissions' | translate }}</a></li>
-                        </ul>
-                    </li>
-                    <!-- Langues -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="languageDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-globe"></i> {{ currentLang.toUpperCase() }}
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                            <li><a class="dropdown-item" (click)="changeLanguage('fr')">
-                                    Français
-                                </a></li>
-                            <li><a class="dropdown-item" (click)="changeLanguage('en')">
-                                    English
-                                </a></li>
-                        </ul>
-                    </li>
-                    <!-- Déconnexion -->
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                
+                <!-- 2. Menus Principaux (Gauche) -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1 fw-medium">
+                    
+                    <!-- Tableaux de bord -->
                     <li class="nav-item">
-                        <a class="nav-link btn btn-danger rounded-pill px-2" (click)="confirmLogout()">
-                            <i class="fa-solid fa-right-from-bracket"></i>
+                        <a class="nav-link" [routerLink]="['/home']" routerLinkActive="active"
+                           [ngClass]="{'active': activeItem === 'home'}" (click)="setActiveMenu('home')">
+                           {{ 'Tableaux de bord' | translate }}
                         </a>
+                    </li>
+
+                    <!-- Projets Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ 'Projets' | translate }}
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                            <li><h6 class="dropdown-header text-uppercase small fw-bold text-muted">Récents</h6></li>
+                            <li><a class="dropdown-item" href="#">Mobile App iOS</a></li>
+                            <li><a class="dropdown-item" href="#">Refonte Web</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" [routerLink]="['/projets']">{{ 'Voir tous les projets' | translate }}</a></li>
+                            <li><a class="dropdown-item" href="#">{{ 'Créer un projet' | translate }}</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Tickets / Filtres -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ 'Filtres' | translate }}
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                            <li><a class="dropdown-item" href="#">{{ 'Mes tickets ouverts' | translate }}</a></li>
+                            <li><a class="dropdown-item" href="#">{{ 'Signalés par moi' | translate }}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">{{ 'Recherche avancée' | translate }}</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Équipes -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ 'Équipes' | translate }}
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                            <li><a class="dropdown-item" href="#">Frontend Squad</a></li>
+                            <li><a class="dropdown-item" href="#">DevOps Team</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Administration (Si autorisé) -->
+                    <li class="nav-item dropdown" *ngIf="habilitation('ADMIN')">
+                        <a class="nav-link dropdown-toggle text-primary" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ 'Administration' | translate }}
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                            <li><a class="dropdown-item" [routerLink]="['adminUser']">{{ 'Utilisateurs' | translate }}</a></li>
+                            <li><a class="dropdown-item" [routerLink]="['adminRole']">{{ 'Permissions' | translate }}</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Bouton Créer -->
+                    <li class="nav-item ms-2 d-none d-lg-block">
+                        <button class="btn btn-primary btn-sm fw-bold px-3 py-1 mt-1" (click)="openCreateModal()">
+                            {{ 'Créer' | translate }}
+                        </button>
                     </li>
                 </ul>
+
+                <!-- 3. Actions Droite (Recherche, Notifs, Profil) -->
+                <div class="d-flex align-items-center gap-3">
+                    
+                    <!-- Barre de recherche -->
+                    <div class="search-wrapper d-none d-md-block position-relative">
+                        <i class="fa fa-search position-absolute text-muted small" style="left: 10px; top: 9px;"></i>
+                        <input type="text" class="form-control form-control-sm ps-4 bg-light border-light" 
+                               placeholder="{{ 'Rechercher...' | translate }}" style="width: 200px;">
+                    </div>
+
+                    <!-- Langues -->
+                    <div class="dropdown">
+                        <button class="btn btn-icon btn-sm" type="button" data-bs-toggle="dropdown" title="Langue">
+                            <i class="fa fa-globe text-muted"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                            <li><a class="dropdown-item" (click)="changeLanguage('fr')" [class.active]="currentLang === 'fr'">Français</a></li>
+                            <li><a class="dropdown-item" (click)="changeLanguage('en')" [class.active]="currentLang === 'en'">English</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Notifications -->
+                    <button class="btn btn-icon btn-sm position-relative" type="button">
+                        <i class="fa fa-bell text-muted"></i>
+                        <span *ngIf="notifications.length > 0" 
+                              class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" 
+                              style="width: 8px; height: 8px;">
+                        </span>
+                    </button>
+
+                    <!-- Profil Utilisateur -->
+                    <div class="dropdown">
+                        <button class="btn btn-avatar p-0 rounded-circle border border-2 border-white shadow-sm" 
+                                type="button" data-bs-toggle="dropdown">
+                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Avatar" 
+                                 class="rounded-circle" width="32" height="32">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2 p-2" style="min-width: 200px;">
+                            <li class="px-2 py-1">
+                                <div class="fw-bold text-dark">Mon Compte</div>
+                                <div class="small text-muted text-truncate">{{ 'user@jiralite.com' }}</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded" href="#">{{ 'Profil' | translate }}</a></li>
+                            <li><a class="dropdown-item rounded" href="#">{{ 'Paramètres' | translate }}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item rounded text-danger fw-medium" (click)="confirmLogout()">
+                                    {{ 'Déconnexion' | translate }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     </nav>
 
-
-    <main>
-        <div class="toast-container position-fixed top-0 end-0 p-3">
-            <div *ngFor="let notification of notifications" class="toast show" role="alert" aria-live="assertive"
-                aria-atomic="true" (click)="handleNotificationClick(notification)">
-                <div class="toast-header">
-                    <strong class="me-auto">{{ notification.title || 'Notification' }}</strong>
-                    <small>{{ notification.timestamp | date:'shortTime' }}</small>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!-- CONTENT WRAPPER -->
+    <main class="main-content">
+        
+        <!-- Toasts Container -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+            <div *ngFor="let notification of notifications" class="toast show bg-white border-0 shadow-lg mb-2" role="alert">
+                <div class="toast-header border-bottom-0">
+                    <div class="rounded me-2 bg-primary" style="width: 16px; height: 16px;"></div>
+                    <strong class="me-auto text-dark">{{ notification.title || 'Notification' }}</strong>
+                    <small class="text-muted">{{ notification.timestamp | date:'shortTime' }}</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
                 </div>
-                <div class="toast-body">
+                <div class="toast-body text-muted small pt-0">
                     {{ notification.message }}
                 </div>
             </div>
         </div>
-        <router-outlet class="my-2"></router-outlet>
+
+        <!-- ROUTER OUTLET -->
+        <router-outlet></router-outlet>
     </main>
 
-</ng-container>
+</div>

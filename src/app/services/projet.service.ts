@@ -15,6 +15,8 @@ export class ProjetService {
 
   // --- Projets ---
   list(criteria: any): Observable<any> {
+    console.log(criteria);
+    
     return this.http.post(`${this.apiUrl}projet/list`, criteria);
   }
 

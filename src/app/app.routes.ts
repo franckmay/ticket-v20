@@ -10,6 +10,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { SprintComponent } from './components/sprint/sprint.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoginActivateGuard } from './services/login-activate.guard';
+import { HomeComponent } from './components/home-component/home-component';
 
 export const routes: Routes = [
     
@@ -21,7 +22,8 @@ export const routes: Routes = [
     path: 'accueil', component: MainComponent,
     canActivate: [LoginActivateGuard],
     children: [
-      { path: '', component: AccueilComponent },
+      { path: '', component: HomeComponent },
+      { path: 'home', component: HomeComponent },
       { path: 'acc', component: ProjectVueComponent },
       { path: 'accueil', component: AccueilComponent },
       { path: 'adminUser', component: UserManagementComponent },
