@@ -1,0 +1,118 @@
+// --- VARIABLES ---
+$bg-body: #f4f5f7;
+$text-dark: #172b4d;
+$text-muted: #6b778c;
+$border-color: #dfe1e6;
+$primary-blue: #0052cc;
+
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: $bg-body;
+    font-family: 'Roboto', sans-serif;
+}
+
+.dashboard-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+// --- VUE 1 : GRILLE PROJETS ---
+.project-card {
+    background: white;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(9, 30, 66, 0.1);
+        border-color: $primary-blue;
+        
+        .card-actions-footer {
+            background-color: #e9f2ff !important;
+        }
+    }
+}
+
+.card-actions-footer {
+    transition: background-color 0.2s;
+}
+
+.project-icon {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px;
+}
+
+// Boutons Icônes (Style Accueil)
+.btn-icon {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    
+    &:hover {
+        background-color: rgba(0,0,0,0.05);
+        border-radius: 4px;
+    }
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// --- VUE 2 : WORKSPACE ---
+.panel-header {
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid $border-color;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.empty-placeholder {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    color: $text-muted; font-size: 0.9rem; font-style: italic; min-height: 150px;
+}
+
+// --- TICKETS ---
+.ticket-item {
+    background: white; margin-bottom: 8px; padding: 12px; border-radius: 4px;
+    border: 1px solid $border-color; border-left: 4px solid #ccc;
+    cursor: pointer; transition: all 0.1s; position: relative;
+
+    &:hover { background-color: #ebecf0; .hover-actions { opacity: 1; } }
+    
+    &.selected {
+        background-color: #e9f2ff !important;
+        border-color: $primary-blue;
+        border-left-color: $primary-blue !important;
+    }
+
+    .status-indicator {
+        position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    }
+
+    // Status Colors
+    &.status-green { border-left-color: #36b37e; }
+    &.status-blue { border-left-color: $primary-blue; }
+    &.status-brown { border-left-color: #bf2600; }
+    &.status-gray { border-left-color: #6b778c; }
+}
+
+.hover-actions {
+    opacity: 0; transition: opacity 0.2s;
+    i { cursor: pointer; &:hover { opacity: 0.7; } }
+}
+
+.fade-in { animation: fadeIn 0.3s ease-out; }
+.fade-in-up { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

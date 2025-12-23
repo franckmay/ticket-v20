@@ -11,6 +11,7 @@ import { SprintComponent } from './components/sprint/sprint.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
 import { LoginActivateGuard } from './services/login-activate.guard';
 import { HomeComponent } from './components/home-component/home-component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 export const routes: Routes = [
     
@@ -24,12 +25,13 @@ export const routes: Routes = [
     children: [
       { path: '', component: HomeComponent },
       { path: 'home', component: HomeComponent },
+      { path: 'accueil', component: AccueilComponent },    
       { path: 'acc', component: ProjectVueComponent },
-      { path: 'accueil', component: AccueilComponent },
       { path: 'adminUser', component: UserManagementComponent },
       { path: 'userstories', component: ItemsComponent },
       { path: 'projets', component: ProjetsComponent },
       { path: 'sprints', component: SprintComponent },
+      { path: 'dashboard', component: DashboardComponent },
     ]
   },
 ];

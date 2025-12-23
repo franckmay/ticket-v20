@@ -45,7 +45,6 @@ import { ProjetEquipeEditComponent } from '../../fragments/projet-equipe-edit/pr
     // Fragments Standalone
     TicketDetailComponent,
     ProjetEditComponent,
-    TicketEditComponent,
     SprintComponent,
     ProjetEquipeEditComponent
   ]

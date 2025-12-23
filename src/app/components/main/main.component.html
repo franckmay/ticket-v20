@@ -67,12 +67,8 @@
                             {{ 'Projets' | translate }}
                         </a>
                         <ul class="dropdown-menu shadow-sm border-0 mt-2">
-                            <li><h6 class="dropdown-header text-uppercase small fw-bold text-muted">Récents</h6></li>
-                            <li><a class="dropdown-item" href="#">Mobile App iOS</a></li>
-                            <li><a class="dropdown-item" href="#">Refonte Web</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" [routerLink]="['/projets']">{{ 'Voir tous les projets' | translate }}</a></li>
-                            <li><a class="dropdown-item" href="#">{{ 'Créer un projet' | translate }}</a></li>
+                            <li><a class="dropdown-item" [routerLink]="['dashboard']">{{ 'Voir tous les projets' | translate }}</a></li>
+                            <li><a class="dropdown-item" [routerLink]="['dashboard']">{{ 'Créer un projet' | translate }}</a></li>
                         </ul>
                     </li>
 
@@ -113,7 +109,7 @@
 
                     <!-- Bouton Créer -->
                     <li class="nav-item ms-2 d-none d-lg-block">
-                        <button class="btn btn-primary btn-sm fw-bold px-3 py-1 mt-1" (click)="openCreateModal()">
+                        <button class="btn btn-primary btn-sm fw-bold px-3 py-1 mt-1" [routerLink]="['dashboard']">
                             {{ 'Créer' | translate }}
                         </button>
                     </li>

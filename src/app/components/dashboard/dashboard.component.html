@@ -1,0 +1,241 @@
+<div class="dashboard-wrapper fade-in">
+    <p-toast position="top-right"></p-toast>
+    <p-confirmDialog [style]="{width: '400px'}"></p-confirmDialog>
+
+    <!-- ====================================================================== -->
+    <!-- VUE 1 : DASHBOARD (GRILLE PROJETS - Vue Initiale) -->
+    <!-- ====================================================================== -->
+    @if (viewMode() === 'dashboard') {
+        <div class="container-fluid p-4">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold text-dark m-0">{{ 'Mes Projets' | translate }}</h3>
+                    <p class="text-muted small m-0">{{ 'Vue d\'ensemble' | translate }}</p>
+                </div>
+                <button class="btn btn-primary rounded-pill shadow-sm px-3" (click)="openProjetEdit()">
+                    <i class="fas fa-plus me-2"></i>{{ 'Nouveau Projet' | translate }}
+                </button>
+            </div>
+
+            <!-- Grille -->
+            <div class="row g-4">
+                @if (loading()) {
+                    <div class="col-12 text-center py-5"><span class="spinner-border text-primary"></span></div>
+                } @else {
+                    @for (p of projects(); track p.projetID) {
+                        <div class="col-md-4 col-xl-3">
+                            <div class="project-card shadow-sm h-100 d-flex flex-column bg-white rounded border" (click)="enterProject(p)">
+                                <div class="p-3 flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="icon-box bg-primary bg-opacity-10 text-primary rounded p-2">
+                                            <i class="fas fa-layer-group"></i>
+                                        </div>
+                                        <span class="badge bg-light text-dark border">{{ p.code }}</span>
+                                    </div>
+                                    <h5 class="fw-bold text-dark text-truncate mb-1" title="{{ p.libelleFr }}">{{ p.libelleFr }}</h5>
+                                    <div class="progress mt-3" style="height: 6px;">
+                                        <div class="progress-bar bg-primary" [style.width.%]="p.tauxExecution || 0"></div>
+                                    </div>
+                                    <small class="text-muted mt-1 d-block">{{ p.tauxExecution || 0 }}% complété</small>
+                                </div>
+                                
+                                <!-- Actions Visibles (Boutons FontAwesome) -->
+                                <div class="card-footer bg-light border-top p-2 d-flex justify-content-between">
+                                    <div>
+                                        <button class="btn btn-sm btn-light text-secondary" title="Équipes" (click)="openEquipes(p, $event)">
+                                            <i class="fas fa-users"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-light text-secondary" title="Sprints" (click)="openSprints(p, $event)">
+                                            <i class="fas fa-list-ul"></i>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-light text-primary" title="Modifier" (click)="openProjetEdit(p, $event)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-light text-danger" title="Supprimer" (click)="deleteProject(p, $event)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+    <!-- ====================================================================== -->
+    <!-- VUE 2 : WORKSPACE (LAYOUT HYBRIDE : SIDEBAR LISTE + SPLITTER) -->
+    <!-- ====================================================================== -->
+    @if (viewMode() === 'workspace' && selectedProjet) {
+        <div class="d-flex h-100 w-100 fixed-layout">
+            
+            <!-- A. SIDEBAR GAUCHE (Liste Projets) -->
+            <div class="project-sidebar bg-white border-end d-flex flex-column" style="width: 280px;">
+                <div class="p-3 border-bottom bg-light d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-light border rounded-circle" (click)="backToDashboard()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <span class="fw-bold text-secondary small">TOUS LES PROJETS</span>
+                </div>
+                <div class="overflow-auto flex-grow-1">
+                    <ul class="list-group list-group-flush">
+                        @for (p of projects(); track p.projetID) {
+                            <li class="list-group-item list-group-item-action border-0 py-3" 
+                                [class.active-project]="selectedProjet.projetID === p.projetID"
+                                (click)="switchProject(p)">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-light text-dark border small">{{ p.code }}</span>
+                                    <small class="text-muted" *ngIf="selectedProjet.projetID !== p.projetID">{{ p.tauxExecution }}%</small>
+                                </div>
+                                <div class="fw-bold mt-1 text-truncate">{{ p.libelleFr }}</div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- B. MAIN CONTENT (Splitter) -->
+            <div class="flex-grow-1 d-flex flex-column bg-light overflow-hidden">
+                
+                <!-- Toolbar Projet -->
+                <div class="bg-white border-bottom px-4 py-2 d-flex justify-content-between align-items-center shadow-sm" style="height: 60px;">
+                    <h4 class="m-0 fw-bold text-primary">{{ selectedProjet.libelleFr }}</h4>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm" (click)="openSprints(selectedProjet)">
+                            <i class="fas fa-list-ul me-1"></i> Sprints
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" (click)="openEquipes(selectedProjet)">
+                            <i class="fas fa-users me-1"></i> Équipes
+                        </button>
+                        <button class="btn btn-light btn-sm border" (click)="openProjetEdit(selectedProjet)">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Splitter Area -->
+                <div class="flex-grow-1 p-3 overflow-hidden">
+                    <p-splitter [style]="{ height: '100%' }" [panelSizes]="[30, 35, 35]" styleClass="border-0 bg-transparent">
+                        
+                        <!-- 1. MODULES -->
+                        <ng-template pTemplate>
+                            <div class="col-panel h-100 d-flex flex-column bg-white border rounded me-2">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
+                                    <span class="fw-bold small text-secondary"><i class="fas fa-cubes me-2"></i>MODULES</span>
+                                    <button class="btn btn-sm btn-light border rounded-circle" (click)="openTicketEdit(1)"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <div class="flex-grow-1 overflow-auto p-2 bg-light-subtle">
+                                    @if (loadingWorkspace() && modules().length === 0) { <div class="text-center p-3"><span class="spinner-border spinner-border-sm"></span></div> }
+                                    @for (m of modules(); track m.ticketID) {
+                                        <div class="ticket-card p-3 mb-2 bg-white border rounded shadow-sm" [class.selected]="selectedModule === m" (click)="onSelectModule(m)">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="badge bg-light text-dark border">{{ m.code }}</span>
+                                                <small class="fw-bold text-muted">{{ m.tauxExecution }}%</small>
+                                            </div>
+                                            <div class="fw-bold text-dark my-1">{{ m.libelleFr }}</div>
+                                            <div class="d-flex justify-content-end gap-2 mt-2">
+                                                <button class="btn btn-sm p-0 text-muted" (click)="$event.stopPropagation(); openTicketEdit(1, m)"><i class="fas fa-pencil-alt"></i></button>
+                                                <button class="btn btn-sm p-0 text-danger" (click)="$event.stopPropagation(); deleteTicket(m, $event)"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <!-- 2. US -->
+                        <ng-template pTemplate>
+                            <div class="col-panel h-100 d-flex flex-column bg-white border rounded mx-2">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
+                                    <span class="fw-bold small text-secondary"><i class="fas fa-bookmark me-2"></i>US</span>
+                                    <button class="btn btn-sm btn-light border rounded-circle" [disabled]="!selectedModule" (click)="openTicketEdit(2)"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <div class="flex-grow-1 overflow-auto p-2 bg-light-subtle">
+                                    @if (!selectedModule) { <div class="text-center p-4 text-muted small">Sélectionnez un module</div> }
+                                    @else {
+                                        @for (us of userStories(); track us.ticketID) {
+                                            <div class="ticket-card p-3 mb-2 bg-white border rounded shadow-sm" [class.selected]="selectedUS === us" (click)="onSelectUS(us)">
+                                                <div class="d-flex gap-2">
+                                                    <i class="fas fa-bookmark text-warning mt-1"></i>
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-bold text-dark small">{{ us.libelleFr }}</div>
+                                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                                            <small class="text-muted">{{ us.code }}</small>
+                                                            <div class="d-flex gap-2">
+                                                                <i class="fas fa-info-circle text-primary cursor-pointer" (click)="$event.stopPropagation(); openTicketDetail(us)"></i>
+                                                                <i class="fas fa-pencil-alt text-muted cursor-pointer" (click)="$event.stopPropagation(); openTicketEdit(2, us)"></i>
+                                                                <i class="fas fa-trash text-danger cursor-pointer" (click)="$event.stopPropagation(); deleteTicket(us, $event)"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </ng-template>
+
+                        <!-- 3. TACHES -->
+                        <ng-template pTemplate>
+                            <div class="col-panel h-100 d-flex flex-column bg-white border rounded ms-2">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top">
+                                    <span class="fw-bold small text-secondary"><i class="fas fa-check-square me-2"></i>TÂCHES</span>
+                                    <button class="btn btn-sm btn-light border rounded-circle" [disabled]="!selectedUS" (click)="openTicketEdit(3)"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <div class="flex-grow-1 overflow-auto p-2 bg-light-subtle">
+                                    @if (!selectedUS) { <div class="text-center p-4 text-muted small">Sélectionnez une US</div> }
+                                    @else {
+                                        @for (t of tasks(); track t.ticketID) {
+                                            <div class="ticket-card p-2 mb-2 bg-white border rounded shadow-sm">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span class="badge bg-secondary bg-opacity-10 text-dark">{{ t.code }}</span>
+                                                    <span class="badge bg-light text-muted border">{{ t.statusLibelle || 'À faire' }}</span>
+                                                </div>
+                                                <div class="fw-bold text-dark small mb-2">{{ t.libelleFr }}</div>
+                                                <div class="border-top pt-2 d-flex justify-content-end gap-2">
+                                                    <i class="fas fa-user-plus text-secondary cursor-pointer" (click)="openAffectation(t)"></i>
+                                                    <i class="fas fa-pencil-alt text-muted cursor-pointer" (click)="openTicketEdit(3, t)"></i>
+                                                    <i class="fas fa-trash text-danger cursor-pointer" (click)="deleteTicket(t, $event)"></i>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </ng-template>
+
+                    </p-splitter>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- MODALES (Dialogs PrimeNG + Contenu Fragment) -->
+<p-dialog [(visible)]="displayProjetDialog" [modal]="true" [style]="{width: '50vw'}" [header]="newProject.projetID ? 'Modifier' : 'Nouveau Projet'">
+    <app-projet-edit [projet]="newProject" [action]="newProject.projetID ? 'edit' : 'new'" (saveProjetEvent)="closeProjetDialog($event)" (backEvent)="closeProjetDialog()"></app-projet-edit>
+</p-dialog>
+
+<p-dialog [(visible)]="displayTicketDialog" [modal]="true" [style]="{width: '60vw'}" header="Ticket">
+    <div *ngIf="selectedTicket">
+        <app-ticket-edit *ngIf="dialogTicketMode === 'edit'" [ticket]="selectedTicket" (save)="closeTicketDialog(true)" (cancel)="closeTicketDialog()"></app-ticket-edit>
+        <app-ticket-detail *ngIf="dialogTicketMode === 'detail'" [ticket]="selectedTicket"></app-ticket-detail>
+    </div>
+</p-dialog>
+
+<p-dialog [(visible)]="displaySprintDialog" [modal]="true" [style]="{width: '80vw', height: '80vh'}" header="Sprints">
+    <app-sprint *ngIf="selectedProjet" [projet]="selectedProjet" (cancel)="displaySprintDialog = false"></app-sprint>
+</p-dialog>
+
+<p-dialog [(visible)]="displayEquipeDialog" [modal]="true" [style]="{width: '60vw'}" header="Équipes">
+    <app-projet-equipe-edit *ngIf="selectedProjet" [projet]="selectedProjet" (cancel)="displayEquipeDialog = false"></app-projet-equipe-edit>
+</p-dialog>
+
+<p-dialog [(visible)]="displayAffectationDialog" [modal]="true" [style]="{width: '50vw'}" header="Affectation">
+    <app-ticket-membre-list *ngIf="selectedTicket" [ticket]="selectedTicket" (cancel)="displayAffectationDialog=false"></app-ticket-membre-list>
+</p-dialog>
